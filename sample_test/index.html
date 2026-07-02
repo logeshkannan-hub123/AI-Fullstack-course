@@ -8,5 +8,29 @@
   <body>
     <h1 style="color: aqua">Hello World!</h1>
     <p>I learn AI course</p>
+    <p id="demo"></p>
+    <script>
+      function countwordsinstring(str) {
+        let count = 0;
+        let inword = false;
+        for (let i = 0; i < str.length; i++) {
+          if (str[i] !== " ") {
+            if (!inword) {
+              count++;
+              inword = true;
+            }
+          } else {
+            inword = false;
+          }
+        }
+        return count;
+      }
+
+      let string = "Hello world!";
+      let result = countwordsinstring(string);
+      console.log("total count of words:", result);
+      document.getElementById("demo").innerHTML =
+        "Total count of words in '" + string + "': " + result;
+    </script>
   </body>
 </html>
