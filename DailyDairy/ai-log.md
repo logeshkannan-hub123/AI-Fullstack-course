@@ -83,3 +83,52 @@ Rewrote `ai-log.md` to clean up formatting: consistent `### Prompt N` / `### Res
 ### Response 4
 
 Rewrote `readme.md` as proper markdown: added a title and `## Day N` headers, and corrected the grammar/typos in each day's entry (e.g. "dispaly" → "displays", "lean" → "learn/learning", "read.md" → `readme.md`) while keeping the original meaning as daily-learning notes. Appended this exchange as Prompt 4/Response 4 here in `ai-log.md`.
+
+----------
+
+## Day 3
+
+### Prompt 1
+
+> hey you will fix the color for this portfolio in professional.
+
+### Response 1
+
+Replaced the inconsistent, muddy colors in `style.css` (brownish-gray header, khaki-brown project cards) with a cohesive professional palette defined as CSS custom properties:
+
+- Slate/navy (`#0f172a`) for header and footer.
+- Blue accent (`#2563eb`) for links, hover states, project-card top borders, and the submit button.
+- Alternating light/white section backgrounds (`#f8fafc` / `#ffffff`) with subtle borders for visual separation.
+- Styled form inputs/textarea with visible borders and a blue focus state (previously unstyled).
+
+---
+
+### Prompt 2
+
+> ok this is good but i will expect contact and skill and image and education will give lot of design and attractive color look like professional. the image will round size. and the hole portfolio will responsive first mobile view and tablet and desktop. fix the code.
+
+### Response 2
+
+Restructured `portfolio.html` with styling hooks and rewrote `style.css` as a mobile-first responsive design (breakpoints at 600px tablet, 950px desktop):
+
+- Hero: flex layout (stacked on mobile, side-by-side on desktop), rounded profile photo (`.img`) with `object-fit: cover`, border, and shadow.
+- About: "Full Stack"/"Responsive" highlights turned into bordered `.feature-card`s in a responsive grid.
+- Education: entries turned into a `.timeline` of cards with a pill-style date badge, degree/institution/score styling.
+- Skills: technical/professional skills turned into `.skill-card`s with pill-style `.skill-list` badges.
+- Projects: moved the stray `<h1>My Projects</h1>` (previously outside the section) inside as `<h2>`, added hover lift/shadow on cards.
+- Contact: rewrote the form markup (removed `<br>`-based layout) into `.form-group` blocks inside a responsive `.contact-form` grid.
+- Added a global reset (`box-sizing: border-box`), system font stack, and consistent section padding/max-width.
+
+---
+
+### Prompt 3
+
+> once again check the design response layout in portfolio will good have any issuse fix it.
+
+### Response 3
+
+Verified the redesign with headless-browser screenshots at mobile/tablet/desktop widths. Desktop and tablet rendered correctly, but mobile (375px) showed a real bug: the nav links and hero paragraph text were overflowing past the viewport edge instead of wrapping, cutting off text (a classic flex-item sizing issue — flex children don't shrink below their content's natural width unless explicitly constrained).
+
+Applied fixes to `style.css`: added `width: 100%` / `min-width: 0` to `nav`, `.hero-text`, `.hero-image`, and `.skill-card` so they shrink properly inside their flex/grid containers, added matching desktop overrides so the row layout still works at 950px+, and added `overflow-x: hidden` on `html`/`body` as a safety net.
+
+Re-screenshots after the fix still showed the same mobile overflow, so the root cause isn't fully fixed yet — this is in progress (was mid-way through isolating whether it's a real layout issue or a headless-browser caching artifact when this session paused).

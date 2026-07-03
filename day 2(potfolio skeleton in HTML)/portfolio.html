@@ -4,12 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio</title>
+    <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
     <header>
-      <a href="#home">LK</a>
+      <a href="#home" id="logo">LK</a>
       <nav>
         <ul>
           <li><a href="#home">Home</a></li>
@@ -24,9 +23,9 @@
 
     <main id="main-content">
       <section id="home">
-        <div>
+        <div class="hero">
           <!-- Text -->
-          <div>
+          <div class="hero-text">
             <h1>Logesh Kannan</h1>
             <p>Full Stack Developer · MCA Graduate</p>
             <p>
@@ -35,40 +34,40 @@
               performance, and delivering real-world impact through code.
             </p>
           </div>
-          <div>
-            <img src="logesh.jpeg" alt="Logesh Kannan Profile Picture" />
+          <div class="hero-image">
+            <img
+              src="./assets/images/logesh.jpeg"
+              alt="Logesh Kannan Profile Picture"
+              class="img"
+            />
           </div>
         </div>
       </section>
 
       <section id="About">
-        <div>
-          <div>
-            <div>
-              <p>Who I Am</p>
-              <h2>Full Stack developer and AI Learner</h2>
-              <p>
-                I'm a Full Stack Developer with an MCA degree from Rathinam
-                Technical Campus, Coimbatore. I specialize in building both the
-                client-side and server-side of web applications — creating
-                seamless, user-friendly experiences from database to browser.
-              </p>
-              <p>
-                My development approach focuses on clean, maintainable code,
-                responsive design, and performance optimization. I enjoy solving
-                complex problems and continuously expanding my technical skill
-                set.
-              </p>
-              <div>
-                <div>
-                  <h3>Full Stack</h3>
-                  <p>End-to-end web development from UI to database</p>
-                </div>
-                <div>
-                  <h3>Responsive</h3>
-                  <p>Mobile-first, pixel-perfect across all devices</p>
-                </div>
-              </div>
+        <div class="about-content">
+          <p class="eyebrow">Who I Am</p>
+          <h2>Full Stack developer and AI Learner</h2>
+          <p>
+            I'm a Full Stack Developer with an MCA degree from Rathinam
+            Technical Campus, Coimbatore. I specialize in building both the
+            client-side and server-side of web applications — creating
+            seamless, user-friendly experiences from database to browser.
+          </p>
+          <p>
+            My development approach focuses on clean, maintainable code,
+            responsive design, and performance optimization. I enjoy solving
+            complex problems and continuously expanding my technical skill
+            set.
+          </p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Full Stack</h3>
+              <p>End-to-end web development from UI to database</p>
+            </div>
+            <div class="feature-card">
+              <h3>Responsive</h3>
+              <p>Mobile-first, pixel-perfect across all devices</p>
             </div>
           </div>
         </div>
@@ -77,50 +76,60 @@
       <section id="Education">
         <div class="container">
           <div>
-            <p>Academic Background</p>
+            <p class="eyebrow">Academic Background</p>
             <h2>Education</h2>
           </div>
-          <div>
-            <div>
-              <span>2023 — 2025</span>
-              <div>MCA — Master of Computer Applications</div>
-              <div>Rathinam Technical Campus, Coimbatore</div>
-              <div>Score: 72%</div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <span class="timeline-date">2023 — 2025</span>
+              <div class="timeline-degree">
+                MCA — Master of Computer Applications
+              </div>
+              <div class="timeline-institution">
+                Rathinam Technical Campus, Coimbatore
+              </div>
+              <div class="timeline-score">Score: 72%</div>
             </div>
 
-            <div>
-              <span>2020 — 2023</span>
-              <div>B.Sc — Computer Science</div>
-              <div>Ayya Nadar Janaki Ammal College, Sivakasi</div>
-              <div>Score: 72%</div>
+            <div class="timeline-item">
+              <span class="timeline-date">2020 — 2023</span>
+              <div class="timeline-degree">B.Sc — Computer Science</div>
+              <div class="timeline-institution">
+                Ayya Nadar Janaki Ammal College, Sivakasi
+              </div>
+              <div class="timeline-score">Score: 72%</div>
             </div>
 
-            <div>
-              <span>2018 — 2020</span>
-              <div>HSC — Higher Secondary Certificate</div>
-              <div>
+            <div class="timeline-item">
+              <span class="timeline-date">2018 — 2020</span>
+              <div class="timeline-degree">
+                HSC — Higher Secondary Certificate
+              </div>
+              <div class="timeline-institution">
                 Nadar Matriculation Higher Secondary School, Rajapalayam
               </div>
-              <div>Score: 67%</div>
+              <div class="timeline-score">Score: 67%</div>
             </div>
 
-            <div>
-              <span>2017 — 2018</span>
-              <div>SSLC — Secondary School Leaving Certificate</div>
-              <div>
+            <div class="timeline-item">
+              <span class="timeline-date">2017 — 2018</span>
+              <div class="timeline-degree">
+                SSLC — Secondary School Leaving Certificate
+              </div>
+              <div class="timeline-institution">
                 Sri Vaiyapuri Vidyalaya Matric Higher Secondary School,
                 Sankarankovil
               </div>
-              <div>Score: 73%</div>
+              <div class="timeline-score">Score: 73%</div>
             </div>
           </div>
         </div>
       </section>
 
       <section id="Skills">
-        <div class="TechnicalSkill">
+        <div class="skill-card TechnicalSkill">
           <h2>Technical Skills</h2>
-          <ul>
+          <ul class="skill-list">
             <li>HTML</li>
             <li>CSS</li>
             <li>JavaScript</li>
@@ -131,12 +140,12 @@
             <li>MongoDB</li>
             <li>Bootstrap</li>
             <li>Git & GitHub</li>
-            <li>laude AI</li>
+            <li>Claude AI</li>
           </ul>
         </div>
-        <div class="ProfessionalSkills">
+        <div class="skill-card ProfessionalSkills">
           <h2>Professional Skills</h2>
-          <ul>
+          <ul class="skill-list">
             <li>Problem Solving</li>
             <li>Communication</li>
             <li>Teamwork</li>
@@ -145,81 +154,168 @@
         </div>
       </section>
 
-      <section id="Project">
-        <h2>My Projects</h2>
-        <article>
-          <h3>Quiz project</h3>
-          <ul>
-            <li>I am doing a quiz project in full-stack.</li>
-            <li>
-              In full-stack web development and I will build both the
-              client-side (frontend) and server-side (backend) of a web
-              application, requiring knowledge of technologies like HTML, CSS,
-              JavaScript, and various backend languages like Node.js,Express Js
-              and various Database language like MYSQL.
-            </li>
-          </ul>
-        </article>
+      <section id="Project" class="projects">
+        <h2 class="projects-heading">My Projects</h2>
+        <div class="projects-grid">
+          <article>
+            <h3>Quiz project</h3>
+            <ul>
+              <li>I am doing a quiz project in full-stack.</li>
+              <li>
+                In full-stack web development and I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring knowledge of technologies like HTML,
+                CSS, JavaScript, and various backend languages like
+                Node.js,Express Js and various Database language like MYSQL.
+              </li>
+            </ul>
+          </article>
 
-        <article>
-          <h3>Sample web page</h3>
-          <ul>
-            <li>
-              I am doing a sample web page in full stack that include
-              Home,courses,contact us,about pages.
-            </li>
-            <li>
-              In full-stack web development and I will build both the
-              client-side (frontend) and server-side (backend) of a web
-              application, requiring knowledge of technologies like HTML, CSS,
-              JavaScript, and various backend languages like Node.js,Express Js
-              and various Database language like MYSQL.
-            </li>
-          </ul>
-        </article>
+          <article>
+            <h3>Sample web page</h3>
+            <ul>
+              <li>
+                I am doing a sample web page in full stack that include
+                Home,courses,contact us,about pages.
+              </li>
+              <li>
+                In full-stack web development and I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring knowledge of technologies like HTML,
+                CSS, JavaScript, and various backend languages like
+                Node.js,Express Js and various Database language like MYSQL.
+              </li>
+            </ul>
+          </article>
 
-        <article>
-          <h3>Shop Expenses web page</h3>
-          <ul>
-            <li>
-              I am creating a web page in full stack that includes a login page
-              that has Google and faceBook authentication, then the user login
-              field and also the registration page. Once logged in, go to the
-              home page including Vonder Bills, Data Management, LogOut. The
-              Vondoe Bills have created a Bill and viewed the Vonder Bills. The
-              Data Management page has material, vonder. The material and vendor
-              page has to view, edit, update, and delete the items it has used
-              only the adim and manager. Ect...
-            </li>
-            <li>
-              In full-stack web development, I will build both the client-side
-              (frontend) and server-side (backend) of a web application,
-              requiring Knowledge of technologies like HTML, CSS, JavaScript,
-              and various Backend languages like Node.js,Express.js and various
-              databases languages like MYSQL and MongoDB. MYSQL has been fetched
-              the data from the client, then MongoDB has been store the
-              request/response the recode.
-            </li>
-          </ul>
-        </article>
+          <article>
+            <h3>Shop Expenses web page</h3>
+            <ul>
+              <li>
+                I am creating a web page in full stack that includes a login
+                page that has Google and faceBook authentication, then the
+                user login field and also the registration page. Once logged
+                in, go to the home page including Vonder Bills, Data
+                Management, LogOut. The Vondoe Bills have created a Bill and
+                viewed the Vonder Bills. The Data Management page has
+                material, vonder. The material and vendor page has to view,
+                edit, update, and delete the items it has used only the adim
+                and manager. Ect...
+              </li>
+              <li>
+                In full-stack web development, I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring Knowledge of technologies like HTML,
+                CSS, JavaScript, and various Backend languages like
+                Node.js,Express.js and various databases languages like MYSQL
+                and MongoDB. MYSQL has been fetched the data from the client,
+                then MongoDB has been store the request/response the recode.
+              </li>
+            </ul>
+          </article>
+
+          <article>
+            <h3>Portfolio web page</h3>
+            <ul>
+              <li>
+                I am creating a portfolio web page in full stack that
+                includes Home, About, Education, Skills, Projects, Contact
+                pages. The Home page has a profile picture and a brief
+                introduction about myself. The About page has a detailed
+                description of my skills and experience. The Education page
+                has a list of my academic qualifications. The Skills page has
+                a list of my technical and professional skills. The Projects
+                page has a list of my projects with descriptions. The Contact
+                page has a form to contact me.
+              </li>
+              <li>
+                In full-stack web development, I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring Knowledge of technologies like HTML,
+                CSS, JavaScript.
+              </li>
+            </ul>
+          </article>
+
+          <article>
+            <h3>AI Chatbot</h3>
+            <ul>
+              <li>
+                I am creating an AI chatbot in full stack that includes a
+                login page that has Google and faceBook authentication, then
+                the user login field and also the registration page. Once
+                logged in, go to the home page including Chatbot, Data
+                Management, LogOut. The Chatbot has created a Chatbot and
+                viewed the Chatbot. The Data Management page has material,
+                vonder. The material and vendor page has to view, edit,
+                update, and delete the items it has used only the adim and
+                manager. Ect...
+              </li>
+              <li>
+                In full-stack web development, I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring Knowledge of technologies like HTML,
+                CSS, JavaScript, and various Backend languages like
+                Node.js,Express.js and various databases languages like MYSQL
+                and MongoDB. MYSQL has been fetched the data from the client,
+                then MongoDB has been store the request/response the recode.
+              </li>
+            </ul>
+          </article>
+
+          <article>
+            <h3>AI Image Generator</h3>
+            <ul>
+              <li>
+                I am creating an AI Image Generator in full stack that
+                includes a login page that has Google and faceBook
+                authentication, then the user login field and also the
+                registration page. Once logged in, go to the home page
+                including Image Generator, Data Management, LogOut. The Image
+                Generator has created a Image Generator and viewed the Image
+                Generator. The Data Management page has material, vonder. The
+                material and vendor page has to view, edit, update, and
+                delete the items it has used only the adim and manager.
+                Ect...
+              </li>
+              <li>
+                In full-stack web development, I will build both the
+                client-side (frontend) and server-side (backend) of a web
+                application, requiring Knowledge of technologies like HTML,
+                CSS, JavaScript, and various Backend languages like
+                Node.js,Express.js and various databases languages like MYSQL
+                and MongoDB. MYSQL has been fetched the data from the client,
+                then MongoDB has been store the request/response the recode.
+              </li>
+            </ul>
+          </article>
+        </div>
       </section>
 
       <section id="Contact">
         <h2>Contact</h2>
-        <form action="submit">
-          <label for="name">Name:</label><br />
-          <input type="text" id="name" name="name" required /><br /><br />
+        <form action="submit" class="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required />
+          </div>
 
-          <label for="phone">Phone No:</label><br />
-          <input type="tel" id="phone" name="phone" required /><br /><br />
+          <div class="form-group">
+            <label for="phone">Phone No</label>
+            <input type="tel" id="phone" name="phone" required />
+          </div>
 
-          <label for="email">Email:</label><br />
-          <input type="email" id="email" name="email" required /><br /><br />
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
 
-          <label for="message">Message:</label><br />
-          <textarea id="message" name="message" required></textarea><br /><br />
+          <div class="form-group form-group-full">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
 
-          <button type="submit">Send Message</button>
+          <button type="submit" class="form-group-full">Send Message</button>
         </form>
       </section>
     </main>

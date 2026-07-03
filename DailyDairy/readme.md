@@ -7,3 +7,9 @@ Sample "Hello World!" printed using HTML, and wrote a function that counts how m
 ## Day 2
 
 Learned the difference between tags, elements, and attributes. Then learned about semantic tags, and created the basic HTML skeleton for the portfolio. Also created `readme.md` (daily learning notes) and `ai-log.md` (log of every prompt and response).
+
+## Day 3
+
+Learned about the CSS box model, Flexbox, Grid, and responsive design. Also learned the difference between Claude.ai and Claude Code in VS Code.
+
+Built the CSS for the sample portfolio HTML, practicing how to prompt Claude Code in VS Code to identify and fix issues properly. Now feeling a bit more confident using Claude Code to prompt, identify issues, and fix them.
