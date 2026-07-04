@@ -84,7 +84,7 @@ Rewrote `ai-log.md` to clean up formatting: consistent `### Prompt N` / `### Res
 
 Rewrote `readme.md` as proper markdown: added a title and `## Day N` headers, and corrected the grammar/typos in each day's entry (e.g. "dispaly" → "displays", "lean" → "learn/learning", "read.md" → `readme.md`) while keeping the original meaning as daily-learning notes. Appended this exchange as Prompt 4/Response 4 here in `ai-log.md`.
 
-----------
+---
 
 ## Day 3
 
@@ -132,3 +132,418 @@ Verified the redesign with headless-browser screenshots at mobile/tablet/desktop
 Applied fixes to `style.css`: added `width: 100%` / `min-width: 0` to `nav`, `.hero-text`, `.hero-image`, and `.skill-card` so they shrink properly inside their flex/grid containers, added matching desktop overrides so the row layout still works at 950px+, and added `overflow-x: hidden` on `html`/`body` as a safety net.
 
 Re-screenshots after the fix still showed the same mobile overflow, so the root cause isn't fully fixed yet — this is in progress (was mid-way through isolating whether it's a real layout issue or a headless-browser caching artifact when this session paused).
+
+---
+
+## Day 4
+
+### Prompt 1
+
+> javascript
+> function countwordsinString(str) {
+> let count = 0;
+> let isWord = false;
+> for (let i = 0; i < str.length; i++) {
+> if (str[i] !== " ") {
+> // console.log("str[i]:", str[i]);
+> if (!isWord) {
+> count++;
+> // console.log("count:", count);
+> isWord = true;
+> // console.log("if - isWord:", isWord);
+> }
+> } else {
+> isWord = false;
+> // console.log("else - isWord:", isWord);
+> }
+>
+> }
+> return count;
+> }
+>
+> hey claude you will explain this code.
+
+### Response
+
+Sure! This function counts the number of words in a string by scanning character by character. Here's the breakdown:
+
+**Variables:**
+
+- `count` — tracks the number of words found
+- `isWord` — a flag tracking whether we're currently "inside" a word (i.e., the previous character was non-space)
+
+**Logic (loop through each character):**
+
+1. **If the current character is NOT a space:**
+   - Check if `isWord` is `false` (meaning we just transitioned from a space, or we're at the very start of the string).
+   - If so, this is the **start of a new word**, so:
+     - Increment `count`
+     - Set `isWord = true` (so we don't count the rest of this same word again)
+   - If `isWord` is already `true`, we're still in the middle of the same word — do nothing, just keep going.
+
+2. **If the current character IS a space:**
+   - Set `isWord = false`, signaling "we're no longer inside a word." This resets things so the next non-space character will be recognized as the start of a new word.
+
+**Example walkthrough with `"hi there"`:**
+
+| i   | char    | isWord (before) | action         | count | isWord (after) |
+| --- | ------- | --------------- | -------------- | ----- | -------------- |
+| 0   | h       | false           | new word start | 1     | true           |
+| 1   | i       | true            | same word      | 1     | true           |
+| 2   | (space) | true            | reset          | 1     | false          |
+| 3   | t       | false           | new word start | 2     | true           |
+| 4-7 | here    | true            | same word      | 2     | true           |
+
+Result: `count = 2` ✅
+
+**Key trick:** Instead of splitting the string or counting spaces, it detects **transitions** from "space" to "non-space" — each transition marks the beginning of a new word. This is a clean O(n) approach with just one pass through the string.
+
+**A couple of edge cases worth noting:**
+
+- Multiple consecutive spaces are handled correctly (e.g., `"hi   there"` still counts as 2 words), since `isWord` just stays `false` across all the spaces.
+- Leading/trailing spaces are also handled fine.
+- However, it only checks for the literal space character `" "` — it won't recognize tabs (`\t`) or newlines (`\n`) as word separators. If you wanted to handle those too, you'd check something like `str[i] === " " || str[i] === "\t" || str[i] === "\n"`, or better, use a regex test like `/\s/.test(str[i])`.
+
+---
+
+### prompt 2
+
+> javascript
+> function countwordsinString(str) {
+> let count = 0;
+> let isWord = false;
+> for (let i = 0; i < str.length; i++) {
+>
+> if (
+> str[i] !== " " &&
+> str[i] !== "." &&
+> str[i] !== "," &&
+> str[i] !== "!" &&
+> str[i] !== "?" &&
+> str[i] !== "\t" &&
+> str[i] !== "\n" &&
+> str[i] !== "`"
+> ) {
+> // console.log("str[i]:", str[i]);
+> if (!isWord) {
+> count++;
+> // console.log("count:", count);
+> isWord = true;
+> // console.log("if - isWord:", isWord);
+> }
+> } else {
+> isWord = false;
+> // console.log("else - isWord:", isWord);
+> }
+>
+> }
+> return count;
+> }
+>
+> Explain the code.
+
+### Response
+
+This function counts the number of words in a string by scanning it character by character and tracking whether it's currently "inside" a word.
+
+**Line by line:**
+
+```javascript
+let count = 0;
+let isWord = false;
+```
+
+- `count` tracks the number of words found.
+- `isWord` is a flag that says whether the previous character was part of a word (true) or a separator (false).
+
+**The loop:**
+
+```javascript
+for (let i = 0; i < str.length; i++) {
+```
+
+Goes through every character in the string one at a time.
+
+**The condition:**
+
+```javascript
+if (
+  str[i] !== " " &&
+  str[i] !== "." &&
+  str[i] !== "," &&
+  str[i] !== "!" &&
+  str[i] !== "?" &&
+  str[i] !== "\t" &&
+  str[i] !== "\n" &&
+  str[i] !== "`"
+)
+```
+
+This checks if the current character is **not** one of the "separator" characters (space, period, comma, exclamation mark, question mark, tab, newline, backtick). In other words: "is this character part of a word?"
+
+**Inside the `if` (character is part of a word):**
+
+```javascript
+if (!isWord) {
+  count++;
+  isWord = true;
+}
+```
+
+- If we weren't already inside a word (`isWord` was `false`), this is the **start of a new word** — so `count` is incremented.
+- `isWord` is set to `true` so that subsequent letters of the same word don't get counted again.
+- If `isWord` was already `true`, nothing happens — we're still in the middle of the same word.
+
+**Inside the `else` (character is a separator):**
+
+```javascript
+} else {
+  isWord = false;
+}
+```
+
+This resets the flag, so the _next_ non-separator character encountered will be treated as the start of a new word.
+
+**Return:**
+
+```javascript
+return count;
+```
+
+Returns the total number of words found.
+
+### Example walkthrough
+
+For `"Hi there!"`:
+
+- `H` → not a separator, `isWord` was false → count = 1, isWord = true
+- `i` → not a separator, isWord already true → nothing happens
+- ` ` (space) → separator → isWord = false
+- `t`, `h`, `e`, `r`, `e` → first `t` triggers count = 2, isWord = true; rest do nothing
+- `!` → separator → isWord = false
+
+Result: `count = 2` ✅
+
+### Key idea
+
+It's essentially detecting **transitions** from "separator" to "non-separator" characters — each transition marks the beginning of a new word, rather than counting every letter or every space.
+
+### A few things worth noting
+
+1. **Limited punctuation list**: It only treats `. , ! ? \t \n` (space) and `` ` `` as separators. Other punctuation like `;`, `:`, `-`, `"`, `'`, or `(` would be treated as part of a word. So `"well-known"` counts as 1 word, but `"hello;world"` would also count as 1 word (since `;` isn't excluded).
+2. **Efficient**: It's O(n) — a single pass through the string, no need for `.split()` or regex.
+3. A simpler alternative using regex would be:
+   ```javascript
+   function countWords(str) {
+     return (str.trim().match(/\S+/g) || []).length;
+   }
+   ```
+   This splits on any whitespace and counts non-empty chunks — arguably cleaner, but the original hand-rolled version avoids regex overhead and gives you full control over what counts as a "separator."
+
+---
+
+### Prompt 3
+
+> javascript
+> function countwordsinString(str) {
+> let count = 0;
+> let isWord = false;
+> for (let i = 0; i < str.length; i++) {
+>
+> if (
+> str[i] !== " " &&
+> str[i] !== "." &&
+> str[i] !== "," &&
+> str[i] !== "!" &&
+> str[i] !== "?" &&
+> str[i] !== "\t" &&
+> str[i] !== "\n" &&
+> str[i] !== "`" &&
+> str[i] !== '"' &&
+> str[i] !== "(" &&
+> str[i] !== ")" &&
+> str[i] !== ":" &&
+> str[i] !== ";" &&
+> str[i] !== "-" &&
+> str[i] !== "\_" &&
+>
+> ) {
+> // console.log("str[i]:", str[i]);
+> if (!isWord) {
+> count++;
+> // console.log("count:", count);
+> isWord = true;
+> // console.log("if - isWord:", isWord);
+> }
+> } else {
+> isWord = false;
+> // console.log("else - isWord:", isWord);
+> }
+>
+> }
+> return count;
+> }
+>
+> Explain the code.
+
+### Response
+
+This function counts the number of "words" in a string by scanning character by character and treating any punctuation/whitespace as a separator.
+
+## How it works
+
+**Variables:**
+
+- `count` — tracks how many words have been found
+- `isWord` — a flag that tracks whether the previous character was part of a word (starts `false`)
+
+**The loop:**
+
+It goes through the string one character at a time and checks: _"is this character NOT one of the punctuation/space characters in that long list?"_
+
+- **If the character is a "real" word character** (a letter, digit, etc. — anything not in that exclusion list):
+  - If `isWord` is currently `false` (meaning we just started a new word), it increments `count` and sets `isWord = true`.
+  - If `isWord` is already `true` (we're in the middle of a word), it does nothing — it won't double-count.
+
+- **If the character IS one of the excluded characters** (space, `.`, `,`, `!`, `(`, etc.):
+  - It sets `isWord = false`, signaling "we're between words now."
+
+This way, a _run_ of consecutive word-characters only increments `count` once — at the moment it transitions from "not in a word" to "in a word."
+
+## Example walkthrough
+
+For `"Hello, world!"`:
+
+| i    | char    | is excluded? | isWord before | action               | count |
+| ---- | ------- | ------------ | ------------- | -------------------- | ----- |
+| 0    | H       | no           | false         | count++, isWord=true | 1     |
+| 1-4  | ello    | no           | true          | nothing              | 1     |
+| 5    | ,       | yes          | —             | isWord=false         | 1     |
+| 6    | (space) | yes          | —             | isWord=false         | 1     |
+| 7    | w       | no           | false         | count++, isWord=true | 2     |
+| 8-11 | orld    | no           | true          | nothing              | 2     |
+| 12   | !       | yes          | —             | isWord=false         | 2     |
+
+Result: **2** words. ✅
+
+## A simpler equivalent
+
+This is essentially a manual, character-by-character version of what you'd get with a regex approach:
+
+```javascript
+function countWordsInString(str) {
+  const matches = str.match(/[^\s.,!?`'"():;\-_{}\[\]/\\|@#$%^&*+=<>~]+/g);
+  return matches ? matches.length : 0;
+}
+```
+
+This splits the string into "runs" of non-punctuation characters and counts how many runs there are — same idea, but the regex engine handles the state-tracking (`isWord`) internally instead of you managing it in a loop.
+
+## Things worth noting
+
+- It doesn't use `\s` (whitespace) as a category — it lists space, tab, and newline individually. That's functionally fine but means characters like a non-breaking space wouldn's be caught as a separator.
+- It's essentially treating a "word" as any maximal run of characters that aren't in the exclusion list — so numbers, emojis, or non-Latin letters would all count as "word" characters too, since they're not explicitly excluded.
+
+---
+
+### Prompt 4
+
+> javascript
+> function countwordsinString(str) {
+> let count = 0;
+> let isWord = false;
+> for (let i = 0; i < str.length; i++) {
+>
+> if (
+> str[i] !== " " &&
+> str[i] !== "." &&
+> str[i] !== "," &&
+> str[i] !== "!" &&
+> str[i] !== "?" &&
+> str[i] !== "\t" &&
+> str[i] !== "\n" &&
+> str[i] !== "`" &&
+> str[i] !== '"' &&
+> str[i] !== "(" &&
+> str[i] !== ")" &&
+> str[i] !== ":" &&
+> str[i] !== ";" &&
+> str[i] !== "-" &&
+> str[i] !== "\_" &&
+>
+> ) {
+> // console.log("str[i]:", str[i]);
+> if (!isWord) {
+> count++;
+> // console.log("count:", count);
+> isWord = true;
+> // console.log("if - isWord:", isWord);
+> }
+> } else {
+> isWord = false;
+> // console.log("else - isWord:", isWord);
+> }
+>
+> }
+> return count;
+> }
+>
+> explain this code
+
+### Response
+
+This function counts the number of "words" in a string by scanning character by character and treating any punctuation/whitespace as a separator.
+
+## How it works
+
+**Variables:**
+
+- `count` — tracks how many words have been found
+- `isWord` — a flag that tracks whether the previous character was part of a word (starts `false`)
+
+**The loop:**
+
+It goes through the string one character at a time and checks: _"is this character NOT one of the punctuation/space characters in that long list?"_
+
+- **If the character is a "real" word character** (a letter, digit, etc. — anything not in that exclusion list):
+  - If `isWord` is currently `false` (meaning we just started a new word), it increments `count` and sets `isWord = true`.
+  - If `isWord` is already `true` (we're in the middle of a word), it does nothing — it won't double-count.
+
+- **If the character IS one of the excluded characters** (space, `.`, `,`, `!`, `(`, etc.):
+  - It sets `isWord = false`, signaling "we're between words now."
+
+This way, a _run_ of consecutive word-characters only increments `count` once — at the moment it transitions from "not in a word" to "in a word."
+
+## Example walkthrough
+
+For `"Hello, world!"`:
+
+| i    | char    | is excluded? | isWord before | action               | count |
+| ---- | ------- | ------------ | ------------- | -------------------- | ----- |
+| 0    | H       | no           | false         | count++, isWord=true | 1     |
+| 1-4  | ello    | no           | true          | nothing              | 1     |
+| 5    | ,       | yes          | —             | isWord=false         | 1     |
+| 6    | (space) | yes          | —             | isWord=false         | 1     |
+| 7    | w       | no           | false         | count++, isWord=true | 2     |
+| 8-11 | orld    | no           | true          | nothing              | 2     |
+| 12   | !       | yes          | —             | isWord=false         | 2     |
+
+Result: **2** words. ✅
+
+## A simpler equivalent
+
+This is essentially a manual, character-by-character version of what you'd get with a regex approach:
+
+```javascript
+function countWordsInString(str) {
+  const matches = str.match(/[^\s.,!?`'"():;\-_{}\[\]/\\|@#$%^&*+=<>~]+/g);
+  return matches ? matches.length : 0;
+}
+```
+
+This splits the string into "runs" of non-punctuation characters and counts how many runs there are — same idea, but the regex engine handles the state-tracking (`isWord`) internally instead of you managing it in a loop.
+
+## Things worth noting
+
+- It doesn't use `\s` (whitespace) as a category — it lists space, tab, and newline individually. That's functionally fine but means characters like a non-breaking space wouldn's be caught as a separator.
+- It's essentially treating a "word" as any maximal run of characters that aren't in the exclusion list — so numbers, emojis, or non-Latin letters would all count as "word" characters too, since they're not explicitly excluded.

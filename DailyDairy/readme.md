@@ -13,3 +13,9 @@ Learned the difference between tags, elements, and attributes. Then learned abou
 Learned about the CSS box model, Flexbox, Grid, and responsive design. Also learned the difference between Claude.ai and Claude Code in VS Code.
 
 Built the CSS for the sample portfolio HTML, practicing how to prompt Claude Code in VS Code to identify and fix issues properly. Now feeling a bit more confident using Claude Code to prompt, identify issues, and fix them.
+
+## Day 4
+
+Today learn about javascript in some basic topic that is variable, datatype, array,object , function , loops(for,while,for of),condition(if,if..else)
+
+those topic will work on the program , then use claude to ask explain the code that will give some edge cases. than i will fix it.
