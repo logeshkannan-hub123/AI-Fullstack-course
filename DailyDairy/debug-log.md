@@ -25,3 +25,32 @@ Iteratively debugged/extended a hand-rolled word-counter (tracks word/non-word t
 - Re-pasted identical code to ask for another explanation; same trailing-`&&` syntax error still present, unresolved.
 
 **Still open:** the dangling `&&` before the closing `)` needs to be removed (or the last condition needs a value after it) before this version will actually execute. Also worth switching to `\s` regex or a `Set` of separator chars instead of a long manual `!==` chain, to make adding more separators less error-prone.
+
+---
+
+## Day 4 Homework — `celsiusToFahrenheit`, `calculate`, `filterEvenNumbersInArray`
+
+Three separate hand-rolled utility functions, each walked through once for correctness and then interrogated for edge cases. No fixes were applied to the actual files — these were explain/discuss exchanges, so all bugs below are still open.
+
+**`celsiusToFahrenheit(celsius)` — temperature converter**
+
+- Core formula (`celsius * 9/5 + 32`) is correct; `celsiusToFahrenheit(37)` → `98.6` as expected.
+- Bug found: **zero input validation.** Non-numeric input (`"abc"`, `undefined`, missing argument) silently returns `NaN` instead of an error.
+- Bug found: no bound-checking — values below absolute zero (`-273.15°C`) compute without complaint.
+- Minor: no rounding, so many inputs produce long floating-point decimals (e.g. `36.6` → `97.88000000000001`).
+- Still open: add a `typeof`/`isNaN` guard and round the result, e.g. `Math.round(((celsius * 9) / 5 + 32) * 100) / 100`.
+
+**`calculate(a, b, operator)` — calculator with guard-clause validation**
+
+- Guard clauses correctly reject non-number operands, non-string operators, invalid operator symbols, and division by zero (`b === 0`, regardless of `a`).
+- **Bug found: `NaN` and `Infinity` slip through validation.** `typeof NaN === "number"` and `typeof Infinity === "number"` are both `true`, so `calculate(NaN, 5, "+")` and `calculate(Infinity, 1, "+")` return `NaN`/`Infinity` instead of an error — the type check confirms _type_, not a _usable_ value.
+- Minor: floating-point precision issues (`0.1 + 0.2` → `0.30000000000000004`) and silent overflow to `Infinity` on very large multiplications.
+- Still open: tighten the operand check with `Number.isFinite(a) && Number.isFinite(b)` to close the `NaN`/`Infinity` gap.
+
+**`filterEvenNumbersInArray(arr)` — even-number filter**
+
+- Core loop/modulo logic is correct for well-formed numeric arrays, including negatives and empty arrays (`[]` → `0`, no crash).
+- **Bug found: non-numeric elements coerce silently.** `"4"` (string) passes `% 2 === 0` and gets pushed as a string, not a number; `null` coerces to `0` and is wrongly treated as even; `[2]` coerces and gets pushed as an array. `undefined`/`{}`/`NaN` happen to get excluded, but only by coincidence of coercion, not real validation.
+- Bug found: non-array input (`null`, `undefined`, a number) either throws (`Cannot read properties of ... 'length'`) or silently returns `0`, misleadingly implying "no evens" instead of "invalid input."
+- Design gap: the function only **returns the count**, while the actual filtered array is only ever `console.log`'d — a caller has no way to retrieve the array itself.
+- Still open: add an `Array.isArray(arr)` guard, replace the manual loop with `arr.filter(num => typeof num === "number" && Number.isFinite(num) && num % 2 === 0)`, and consider returning the array (or both array and count) instead of discarding it.
