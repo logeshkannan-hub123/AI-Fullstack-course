@@ -35,3 +35,7 @@ git branch -d feature/dark-mode   # delete merged branch
 git status                        # shows which branch you are on
 git log --oneline --graph         # visual branch history in terminal
 ```
+
+## Day 6 (7/72026)
+
+Today learn about Destructuring, Spread & Rest, ES Modules, Promises, async/await fetch API. OPTIONAL CHAINING ?. & NULLISH COALESCING ?? , ?. matrum ?? — null/undefined bugs avoid panna. || — replaces any falsy value (0, "", false).

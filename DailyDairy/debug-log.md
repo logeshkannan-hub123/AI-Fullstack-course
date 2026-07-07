@@ -54,3 +54,15 @@ Three separate hand-rolled utility functions, each walked through once for corre
 - Bug found: non-array input (`null`, `undefined`, a number) either throws (`Cannot read properties of ... 'length'`) or silently returns `0`, misleadingly implying "no evens" instead of "invalid input."
 - Design gap: the function only **returns the count**, while the actual filtered array is only ever `console.log`'d — a caller has no way to retrieve the array itself.
 - Still open: add an `Array.isArray(arr)` guard, replace the manual loop with `arr.filter(num => typeof num === "number" && Number.isFinite(num) && num % 2 === 0)`, and consider returning the array (or both array and count) instead of discarding it.
+
+## Day 6 — `fetchPosts()` (`api.js` + `main.js`)
+
+Reviewed a `fetch()`-based data-loading function (`api.js`) that feeds a DOM-rendering loop (`main.js`), then interrogated it for edge cases.
+
+- `response.ok` check is correct: `fetch()` does **not** throw on HTTP error statuses (404, 500, etc.), so the explicit `if (!response.ok) throw new Error(...)` is required and present — non-2xx responses are correctly funneled into `catch`.
+- **Bug found: `catch` block didn't return anything.** On any error (network down, HTTP error, invalid JSON), the function resolved to `undefined` instead of an array. Since `main.js` calls `posts.forEach(...)` directly on the result with no guard, this would throw `TypeError: Cannot read properties of undefined (reading 'forEach')` downstream.
+  - **Fixed:** `catch` now returns `[]`, so `posts` is always an array and `main.js`'s `forEach` never crashes on the error path.
+- Bug found (fixed): a stray `fetchPosts();` call at the bottom of `api.js` would double-fire the request if another module also imported and called it. Removed so the caller (`main.js`) is the only place that triggers the fetch.
+- Still open: no timeout/abort handling — if the server hangs, `fetch()` waits indefinitely. Not addressed in `api.js`; would need an `AbortController` with a `setTimeout` to cancel after N seconds.
+- Still open: an empty-array response (`[]`) is valid and doesn't throw, but `main.js` has no "no posts found" fallback — an empty grid renders silently with no user-facing message.
+- Still open: invalid/non-JSON response body would throw inside `response.json()` and get caught, but only logged via `console.error` — no user-visible error state in the UI (`main.js` never checks for an empty/failed result before iterating).

@@ -1009,3 +1009,86 @@ function filterEvenNumbersInArray(arr) {
 ```
 
 Did your edge case line up with the type-coercion issue (#2), or were you thinking about something else — like the empty array or non-array input?
+
+## Day 6
+
+### Prompt 1
+
+> ```javascript
+> export default async function fetchPosts() {
+>   try {
+>     const response = await fetch(
+>       "https://jsonplaceholder.typicode.com/posts?_limit=9",
+>     );
+>     if (!response.ok) {
+>       throw new Error(`HTTP ${response.status}`);
+>     }
+>     const data = await response.json();
+>     console.log(data);
+>     return data;
+>   } catch (error) {
+>     console.error("Fetch failed:", error);
+>   } finally {
+>     console.log(
+>       "If project work or error will come the finally part will exicute finally part",
+>     );
+>   }
+> }
+>
+> fetchPosts();
+> ```
+>
+> explain the code have any edge case
+
+### Response 1
+
+This code is good for learning **async/await**, **try...catch...finally**, and **fetch()**. Here's a walkthrough followed by the edge cases.
+
+**How it works**
+
+- `export default async function fetchPosts()` — declares `fetchPosts` as the file's default export. `async` means the function always returns a Promise; `return data` really resolves to `Promise.resolve(data)`.
+- `await fetch(url)` — sends a `GET` request and, once headers arrive, resolves to a `Response` object (not the JSON body itself — that's still an unread stream at this point).
+- `if (!response.ok) throw new Error(...)` — `response.ok` is `true` only for status `200–299`. Crucially, `fetch()` does **not** throw on HTTP error statuses like 404/500 on its own, so this manual check is what turns a bad status into a catchable error.
+- `await response.json()` — parses the response body stream into a JS value (here, an array of post objects).
+- `catch (error)` — runs on network failure, the thrown `HTTP {status}` error, or a JSON parse failure.
+- `finally { ... }` — runs unconditionally after either the `try` or `catch` path, even though the function is about to `return`.
+
+**Execution flow (success):** `fetchPosts()` → `try` → `fetch()` → `response.ok` check passes → `response.json()` → `console.log(data)` → `return data` → `finally` → done.
+
+**Execution flow (error):** `fetchPosts()` → `try` → `fetch()`/`response.ok`/`response.json()` throws → `catch` → `finally` → done (resolves to `undefined`).
+
+**Edge cases**
+
+1. **Internet disconnected** — `fetch()` throws `TypeError: Failed to fetch`. Caught correctly. ✅
+2. **Server returns 404/500** — `fetch()` does not throw for these; `response.ok` is `false`, and the explicit `throw new Error(...)` routes it into `catch`. ✅
+3. **Invalid JSON body** — `response.json()` throws a parse error, caught correctly. ✅
+4. **API returns an empty array (`[]`)** — not an error, but the caller should still check `posts.length === 0` before assuming there's data to render.
+5. **`catch` doesn't return anything.** If an error happens, the function resolves to `undefined` instead of an array. A caller doing `posts.forEach(...)` on that result throws `TypeError: Cannot read properties of undefined (reading 'forEach')`. Fix: `return []` inside `catch` so the return type is always an array.
+6. **Fetch takes too long.** If the server hangs, `fetch()` waits indefinitely — there's no timeout. Fix: use an `AbortController` with `setTimeout(() => controller.abort(), 5000)` and pass `signal: controller.signal` to `fetch()`.
+7. **Duplicate API calls.** The trailing `fetchPosts();` call at the bottom of the file means anything that also imports and calls `fetchPosts()` triggers a second request. Since this is meant to be a reusable exported function, that trailing call should be removed and left to the caller.
+
+**Recommended version:**
+
+```javascript
+export default async function fetchPosts() {
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/posts?_limit=9",
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Fetch failed:", error);
+    return []; // Always return an array
+  } finally {
+    console.log("fetchPosts() completed.");
+  }
+}
+```
+
+This version has a predictable return type, avoids runtime errors in calling code, and is better suited for production use.
