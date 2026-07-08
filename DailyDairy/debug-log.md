@@ -66,3 +66,19 @@ Reviewed a `fetch()`-based data-loading function (`api.js`) that feeds a DOM-ren
 - Still open: no timeout/abort handling — if the server hangs, `fetch()` waits indefinitely. Not addressed in `api.js`; would need an `AbortController` with a `setTimeout` to cancel after N seconds.
 - Still open: an empty-array response (`[]`) is valid and doesn't throw, but `main.js` has no "no posts found" fallback — an empty grid renders silently with no user-facing message.
 - Still open: invalid/non-JSON response body would throw inside `response.json()` and get caught, but only logged via `console.error` — no user-visible error state in the UI (`main.js` never checks for an empty/failed result before iterating).
+
+## Day 7 (8/7/26) — `fetchgeolocation()` (`api.js` + `main.js`)
+
+Reviewed a two-step `fetch()` chain (city name → coordinates via geocoding, then coordinates → weather) feeding a form-driven weather-app UI, then interrogated it for edge cases.
+
+- Both requests correctly check `response.ok` before parsing, since neither the geocoding nor the weather API throws on its own for HTTP error statuses (404/500).
+- The geocoding "no results" case (`data.results` empty or missing) is correctly turned into a thrown, catchable error instead of crashing later on `data.results[0]`.
+- **Bug found: empty/whitespace-only city input wasn't checked before calling the API.** `fetchgeolocation("")` or `fetchgeolocation("   ")` would fire an unnecessary geocoding request instead of failing fast.
+  - **Fixed:** `api.js` now trims the input and throws `"Please enter a city name."` up front if it's empty, before any `fetch()` runs.
+- **Bug found: `main.js` had no client-side input validation**, so non-city input (numbers, symbols) would also trigger a wasted API round-trip before the "not found" error came back.
+  - **Fixed:** `main.js` now validates with `cityRegex = /^[A-Za-z\s]+$/` before submitting, so only letter/space input reaches `fetchgeolocation()`.
+- Design change from the original prompt: the original returned `null` on failure, which gave callers no error detail. **Fixed:** `api.js` now returns `{ error: error.message }` instead, so `main.js` can render the actual failure reason (e.g. `"City not found."`) rather than a generic message.
+- Still open: **multiple cities sharing a name** (e.g. "Springfield") silently resolve to the first geocoding match (`count=1`) — no way for the user to pick the right one.
+- Still open: **no timeout/abort handling** on either `fetch()` call — if either API hangs, the request waits indefinitely with no `AbortController`/timeout in place.
+- Still open: **API response shape isn't defensively checked** — `const { latitude, longitude, name, country } = data.results[0]` assumes those fields exist; a schema change upstream would silently produce `undefined` values rather than a clear error.
+- Still open: **rate limiting / temporary server errors** fall into the same generic `catch` path as every other failure, so the UI can't distinguish "try again in a moment" from "city doesn't exist."

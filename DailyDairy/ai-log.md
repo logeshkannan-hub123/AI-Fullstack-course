@@ -1010,7 +1010,7 @@ function filterEvenNumbersInArray(arr) {
 
 Did your edge case line up with the type-coercion issue (#2), or were you thinking about something else — like the empty array or non-array input?
 
-## Day 6
+## Day 6 (7/72026)
 
 ### Prompt 1
 
@@ -1092,3 +1092,95 @@ export default async function fetchPosts() {
 ```
 
 This version has a predictable return type, avoids runtime errors in calling code, and is better suited for production use.
+
+## Day 7 (8/7/26)
+
+### Prompt 1
+
+> ```javascript
+> export default async function fetchgeolocation(city) {
+>   try {
+>     // Get latitude & longitude
+>     const response = await fetch(
+>       `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`,
+>     );
+>
+>     if (!response.ok) {
+>       throw new Error(`HTTP Error: ${response.status}`);
+>     }
+>
+>     const data = await response.json();
+>
+>     if (!data.results || data.results.length === 0) {
+>       throw new Error("City not found");
+>     }
+>
+>     const { latitude, longitude } = data.results[0];
+>
+>     console.log("Latitude:", latitude);
+>     console.log("Longitude:", longitude);
+>
+>     // Get weather
+>     const response1 = await fetch(
+>       `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+>     );
+>
+>     if (!response1.ok) {
+>       throw new Error(`HTTP Error: ${response1.status}`);
+>     }
+>
+>     const data1 = await response1.json();
+>
+>     // console.log(data1);
+>
+>     return data1;
+>   } catch (error) {
+>     console.error("Error:", error);
+>     return null;
+>   } finally {
+>     console.log("fetchgeolocation() completed.");
+>   }
+> }
+> ```
+>
+> Explain the code and any edge case have say to me.
+
+### Response 1
+
+This function chains two API calls — city name → coordinates (geocoding), then coordinates → weather — sharing one `try/catch/finally` block.
+
+**How it works**
+
+- `export default async function fetchgeolocation(city)` — default export (importable without curly braces); `async` means it always returns a Promise.
+- **Step 1 — geocoding request:** `fetch()`s the Open-Meteo geocoding API with `encodeURIComponent(city)`, so spaces/special characters in the input don't break the URL (`"New York"` → `New%20York`, `"São Paulo"` → `S%C3%A3o%20Paulo`). `if (!response.ok) throw ...` catches non-2xx statuses, since `fetch()` doesn't throw on those by itself.
+- **City-not-found guard:** `if (!data.results || data.results.length === 0) throw new Error("City not found")` — the geocoding API returns an empty (or missing) `results` array for unmatched cities instead of erroring, so this check is what turns "no match" into a catchable error.
+- **Destructuring:** `const { latitude, longitude } = data.results[0]` pulls the first (best) match's coordinates.
+- **Step 2 — weather request:** a second `fetch()` using those coordinates, with the same `response.ok` pattern.
+- **`catch (error)`** logs and returns `null` on any failure (network down, bad city, HTTP error from either API) instead of letting the caller crash.
+- **`finally`** always runs regardless of outcome — useful for hiding a loading spinner or logging completion.
+
+**Execution flow:** city → geocode fetch → `response.ok`? → city found? → extract lat/long → weather fetch → `response.ok`? → return weather data. Any "no" branch jumps straight to `catch`, and `finally` always runs last.
+
+**Edge cases**
+
+1. **Empty string or whitespace-only input (`""`, `"   "`)** — not checked before calling the API, so an unnecessary request goes out. Fix: `if (!city || !city.trim()) throw new Error("Please enter a city name.")`, and normalize with `city = city.trim()` so `"  Chennai  "` is treated as `"Chennai"`.
+2. **City not found** — ✅ handled, throws `"City not found"`.
+3. **Internet disconnected** — ✅ handled, caught by `catch`.
+4. **Geocoding or weather API returns an HTTP error** — ✅ handled, both requests have their own `response.ok` check.
+5. **Multiple cities share a name** (e.g. "Springfield") — silently uses the first result (`count=1`) with no way for the user to disambiguate. Not a bug, but a UX gap if precision matters.
+6. **API response shape changes** — destructuring `{ latitude, longitude }` assumes those fields exist; if Open-Meteo changes its schema, this fails silently with `undefined` coordinates rather than a clear error.
+7. **Long/unusual city names** — ✅ already handled by `encodeURIComponent()`.
+8. **Rate limiting / temporary server errors** — falls into `catch` like any other failure, but the caller only sees a generic error; a friendlier "please try again later" message would help.
+
+**Suggested addition — input validation up front:**
+
+```javascript
+if (!city || city.trim() === "") {
+  throw new Error("Please enter a city name.");
+}
+city = city.trim();
+```
+
+This avoids firing a request for empty/whitespace input and normalizes accidental leading/trailing spaces before the city ever reaches the API.
+
+Overall the function already follows good practices: `async/await` for readability, `response.ok` checks on both requests, validation that the geocoding API actually returned results, and `null`-on-failure instead of letting the app crash.
