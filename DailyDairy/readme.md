@@ -39,3 +39,7 @@ git log --oneline --graph         # visual branch history in terminal
 ## Day 6 (7/72026)
 
 Today learn about Destructuring, Spread & Rest, ES Modules, Promises, async/await fetch API. OPTIONAL CHAINING ?. & NULLISH COALESCING ?? , ?. matrum ?? — null/undefined bugs avoid panna. || — replaces any falsy value (0, "", false).
+
+## Day 7 (8/7/26)
+
+Today I will learnn REST,Status Code, API docs, Nested JSON, Error handling. newly i will learn the API docs for how check the goelocation and using latitude and longitude get the weather. use this api will build the weather check app.

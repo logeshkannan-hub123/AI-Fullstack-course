@@ -1184,3 +1184,77 @@ city = city.trim();
 This avoids firing a request for empty/whitespace input and normalizes accidental leading/trailing spaces before the city ever reaches the API.
 
 Overall the function already follows good practices: `async/await` for readability, `response.ok` checks on both requests, validation that the geocoding API actually returned results, and `null`-on-failure instead of letting the app crash.
+
+### prompt 2
+
+> https://geocoding-api.open-meteo.com/v1/search?name=Chennai&count=1 ,and https://api.open-meteo.com/v1/forecast ?latitude=9.45 &longitude=77.55&current_weather=true
+> this two link document link give to me
+
+### Response
+
+Here are the official Open-Meteo documentation links for the APIs you're using.
+
+### 1. Geocoding API Documentation (City → Latitude & Longitude)
+
+Use this to convert a city name into latitude and longitude.
+
+[Open-Meteo Geocoding API Documentation](https://open-meteo.com/en/docs/geocoding-api?utm_source=chatgpt.com)
+
+**API Example:**
+
+```text
+https://geocoding-api.open-meteo.com/v1/search?name=Chennai&count=1
+```
+
+The API returns information such as:
+
+- `latitude`
+- `longitude`
+- `country`
+- `country_code`
+- `admin1` (state)
+- `timezone`
+- `elevation`
+- `population` ([Open Meteo][1])
+
+---
+
+### 2. Weather Forecast API Documentation (Latitude & Longitude → Weather)
+
+Use this to get the weather after you have the latitude and longitude.
+
+[Open-Meteo Weather Forecast API Documentation](https://open-meteo.com/en/docs?utm_source=chatgpt.com)
+
+**API Example:**
+
+```text
+https://api.open-meteo.com/v1/forecast?latitude=9.45&longitude=77.55&current_weather=true
+```
+
+Or, using the newer parameter format recommended by Open-Meteo:
+
+```text
+https://api.open-meteo.com/v1/forecast?latitude=9.45&longitude=77.55&current=temperature_2m,wind_speed_10m
+```
+
+The Weather Forecast API supports:
+
+- Current weather
+- Hourly forecast
+- Daily forecast
+- Temperature
+- Humidity
+- Wind speed
+- Wind direction
+- Rain probability
+- Weather code
+- Timezone
+- 7–16 day forecasts ([Open Meteo][2])
+
+These two APIs are all you need to build a complete weather app:
+
+1. **Geocoding API** → Convert a city name to latitude and longitude.
+2. **Forecast API** → Use those coordinates to fetch the current weather and forecasts.
+
+[1]: https://open-meteo.com/en/docs/geocoding-api?utm_source=chatgpt.com "Geocoding API | Open-Meteo.com"
+[2]: https://open-meteo.com/en/docs?utm_source=chatgpt.com "🌦️ Docs | Open-Meteo.com"
