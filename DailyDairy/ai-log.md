@@ -1790,3 +1790,398 @@ The two responses summarize **different documentation**. Here's the difference:
 
 - **First response:** A **project-oriented summary** focused on the two APIs your application uses.
 - **Second response:** A **documentation-oriented summary** of the official Open-Meteo Weather API, covering its broader functionality and ecosystem.
+
+## Day 8 (9/7/26)
+
+### Prompt 1
+
+> export default async function fetchgeolocation(city) {
+> city = city.trim();
+
+if (!city) {
+throw new Error("Please enter a city name.");
+}
+
+try {
+// Get latitude & longitude
+const response = await fetch(
+`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
+);
+
+    if (!response.ok) {
+      throw new Error(`Geocoding API Error (${response.status})`);
+    }
+
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      throw new Error("City not found.");
+    }
+
+    const { latitude, longitude, name, country, admin1 } = data.results[0];
+
+    // Get weather
+    const weatherResponse = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+    );
+
+    if (!weatherResponse.ok) {
+      throw new Error(`Weather API Error (${weatherResponse.status})`);
+    }
+
+    const weatherData = await weatherResponse.json();
+
+    if (!weatherData.current_weather) {
+      throw new Error("Weather data unavailable.");
+    }
+
+    return {
+      city: name,
+      country,
+      admin1,
+      latitude,
+      longitude,
+      ...weatherData,
+    };
+
+} catch (error) {
+console.error(error);
+return {
+error: error.message,
+};
+} finally {
+console.log("fetchgeolocation() completed.");
+}
+}
+
+give the edge case.
+
+### Response
+
+Your `fetchgeolocation()` function is good. Here are the important **edge cases** you should consider and how your current code handles them.
+
+| Edge Case                                       | Current Status                                  | Result                           |
+| ----------------------------------------------- | ----------------------------------------------- | -------------------------------- |
+| Empty input (`""`)                              | ✅ Handled                                      | `"Please enter a city name."`    |
+| Only spaces (`"   "`)                           | ✅ Handled                                      | `trim()` removes spaces          |
+| City not found (`abcxyz123`)                    | ✅ Handled                                      | `"City not found."`              |
+| Geocoding API returns 404/500                   | ✅ Handled                                      | `"Geocoding API Error (...)"`    |
+| Weather API returns 404/500                     | ✅ Handled                                      | `"Weather API Error (...)"`      |
+| Weather data missing                            | ✅ Handled                                      | `"Weather data unavailable."`    |
+| Network disconnected                            | ✅ Handled                                      | `Failed to fetch`                |
+| Invalid JSON response                           | ✅ Handled                                      | Goes to `catch`                  |
+| Slow internet                                   | ⚠️ No loading timeout                           | Spinner may show for a long time |
+| User enters uppercase (`CHENNAI`)               | ✅ Works                                        | API ignores case                 |
+| User enters lowercase (`chennai`)               | ✅ Works                                        | API ignores case                 |
+| User enters leading/trailing spaces (`Chennai`) | ✅ Works                                        | `trim()` removes them            |
+| User enters special characters (`@#$%`)         | ⚠️ API will likely return "City not found"      |                                  |
+| User enters numbers only (`12345`)              | ⚠️ API will likely return "City not found"      |                                  |
+| User enters a very long string                  | ⚠️ API request still sent                       |                                  |
+| Duplicate searches                              | ✅ Works                                        | No issue                         |
+| Multiple rapid clicks                           | ⚠️ Multiple requests can be sent simultaneously |                                  |
+
+---
+
+## 1. Empty Input ✅
+
+```js
+"";
+```
+
+Output
+
+```
+Please enter a city name.
+```
+
+Already handled.
+
+---
+
+## 2. Only Spaces ✅
+
+```js
+"      ";
+```
+
+After
+
+```js
+city = city.trim();
+```
+
+becomes
+
+```js
+"";
+```
+
+Handled.
+
+---
+
+## 3. City Doesn't Exist ✅
+
+Example
+
+```text
+abcdefghijk
+```
+
+Result
+
+```
+City not found.
+```
+
+Handled.
+
+---
+
+## 4. Internet Not Connected ✅
+
+When
+
+```js
+fetch(...)
+```
+
+fails
+
+it throws
+
+```
+TypeError: Failed to fetch
+```
+
+Your
+
+```js
+catch(error)
+```
+
+handles it.
+
+---
+
+## 5. API Server Down ✅
+
+If Open-Meteo returns
+
+```
+500
+```
+
+or
+
+```
+503
+```
+
+your code throws
+
+```js
+throw new Error(...)
+```
+
+Handled.
+
+---
+
+## 6. Weather Missing ✅
+
+If
+
+```js
+weatherData.current_weather;
+```
+
+doesn't exist
+
+you already do
+
+```js
+throw new Error("Weather data unavailable.");
+```
+
+Perfect.
+
+---
+
+# Better Edge Cases
+
+## 7. User Enters Numbers Only
+
+Example
+
+```
+123456
+```
+
+Better validation:
+
+```js
+if (/^\d+$/.test(city)) {
+  throw new Error("City name cannot contain only numbers.");
+}
+```
+
+---
+
+## 8. User Enters Special Characters
+
+Example
+
+```
+@@@###
+```
+
+Better validation
+
+```js
+if (!/^[a-zA-Z\s-]+$/.test(city)) {
+  throw new Error("Please enter a valid city name.");
+}
+```
+
+Examples rejected
+
+```
+@@@###
+1234
+abc123
+!!!!!
+```
+
+Examples accepted
+
+```
+Chennai
+New Delhi
+Los Angeles
+Coimbatore
+```
+
+---
+
+## 9. User Enters Very Long Text
+
+Example
+
+```
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+```
+
+Better
+
+```js
+if (city.length > 50) {
+  throw new Error("City name is too long.");
+}
+```
+
+---
+
+## 10. Network Timeout
+
+Currently
+
+```
+fetch()
+```
+
+can wait forever.
+
+Better
+
+```js
+AbortController;
+```
+
+after
+
+```
+10 seconds
+```
+
+show
+
+```
+Request timed out.
+```
+
+---
+
+## 11. Multiple Search Clicks
+
+User clicks
+
+```
+Search
+
+Search
+
+Search
+
+Search
+```
+
+4 requests go.
+
+Better
+
+Disable button while loading.
+
+```jsx
+<button disabled={loading}>Search</button>
+```
+
+---
+
+## 12. Duplicate Spaces
+
+User types
+
+```
+New      Delhi
+```
+
+Normalize it.
+
+```js
+city = city.trim().replace(/\s+/g, " ");
+```
+
+becomes
+
+```
+New Delhi
+```
+
+---
+
+# Final Validation (Recommended)
+
+Place these checks immediately after `city = city.trim();`:
+
+```js
+city = city.trim().replace(/\s+/g, " ");
+
+if (!city) {
+  throw new Error("Please enter a city name.");
+}
+
+if (city.length > 50) {
+  throw new Error("City name is too long.");
+}
+
+if (/^\d+$/.test(city)) {
+  throw new Error("City name cannot contain only numbers.");
+}
+
+if (!/^[A-Za-z\s-]+$/.test(city)) {
+  throw new Error("Please enter a valid city name.");
+}
+```
+
+This will make your function robust against the most common invalid inputs while still allowing valid city names like `"New Delhi"` and `"Los Angeles"`.

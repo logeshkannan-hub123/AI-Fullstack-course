@@ -82,3 +82,14 @@ Reviewed a two-step `fetch()` chain (city name → coordinates via geocoding, th
 - Still open: **no timeout/abort handling** on either `fetch()` call — if either API hangs, the request waits indefinitely with no `AbortController`/timeout in place.
 - Still open: **API response shape isn't defensively checked** — `const { latitude, longitude, name, country } = data.results[0]` assumes those fields exist; a schema change upstream would silently produce `undefined` values rather than a clear error.
 - Still open: **rate limiting / temporary server errors** fall into the same generic `catch` path as every other failure, so the UI can't distinguish "try again in a moment" from "city doesn't exist."
+
+## Day 8 — (9/7/26)
+
+**Follow-up edge-case audit (same function, later in the session)** — re-reviewed `fetchgeolocation()` against a fuller edge-case table. Confirmed the previously-fixed cases (empty/whitespace input, city-not-found, HTTP errors on either API, missing `current_weather`, network failure, invalid JSON) all still hold correctly. Surfaced additional gaps — discuss-only, nothing below has been applied to `fetchgeolocation.js` yet:
+
+- Still open: **numeric-only input** (e.g. `"12345"`) isn't rejected client-side — it's sent to the geocoding API and only fails there with the generic `"City not found."`. Recommended: `if (/^\d+$/.test(city)) throw new Error("City name cannot contain only numbers.")`.
+- Still open: **special-character input** (e.g. `"@@@###"`) has the same gap — falls through to a generic "not found" instead of a clear validation message. Recommended: `if (!/^[A-Za-z\s-]+$/.test(city)) throw new Error("Please enter a valid city name.")`.
+- Still open: **no max-length check** — an arbitrarily long string is still sent as a request instead of being rejected early. Recommended: reject input over ~50 characters before fetching.
+- Still open: **internal duplicate whitespace isn't collapsed** — `city.trim()` only strips leading/trailing spaces, so `"New   Delhi"` is sent with the extra internal spaces intact. Recommended: `city = city.trim().replace(/\s+/g, " ")`.
+- Still open: **no request timeout/abort** — same gap noted above; still no `AbortController`, so a hung server blocks the UI indefinitely with the spinner showing.
+- Still open: **no re-entrancy guard on the Search button** — rapid repeated clicks can fire multiple concurrent requests, since nothing disables the button while `loading` is `true`. Recommended: `<button disabled={loading}>Search</button>`.
