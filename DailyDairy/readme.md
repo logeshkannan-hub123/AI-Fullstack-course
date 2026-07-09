@@ -43,3 +43,7 @@ Today learn about Destructuring, Spread & Rest, ES Modules, Promises, async/awai
 ## Day 7 (8/7/26)
 
 Today I will learnn REST,Status Code, API docs, Nested JSON, Error handling. newly i will learn the API docs for how check the goelocation and using latitude and longitude get the weather. use this api will build the weather check app.
+
+## Day 8 (9/7/26)
+
+Today i will learn about react components, Props, vite. how to install react app using vite and create component then how use props.

@@ -45,6 +45,8 @@ function App() {
         {weather && (
           <WeatherCard
             city={weather.city}
+            country={weather.country}
+            admin1={weather.admin1}
             temp={weather.current_weather.temperature}
             WindSpeed={`${weather.current_weather.windspeed} km/h`}
             WindDirection={`${weather.current_weather.winddirection}°`}

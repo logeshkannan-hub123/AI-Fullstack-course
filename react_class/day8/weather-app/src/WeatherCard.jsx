@@ -33,6 +33,7 @@ function WeatherCard(props) {
         <div>
           <p className="card-eyebrow">Current Weather</p>
           <h2 className="card-city">{props.city}</h2>
+          <span>{props.country}</span><br /><span>{props.admin1}</span>
         </div>
         <div className="card-icon" title={label} aria-hidden="true">
           {icon}

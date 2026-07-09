@@ -21,7 +21,7 @@ export default async function fetchgeolocation(city) {
       throw new Error("City not found.");
     }
 
-    const { latitude, longitude, name, country } = data.results[0];
+    const { latitude, longitude, name, country, admin1 } = data.results[0];
 
     // Get weather
     const weatherResponse = await fetch(
@@ -41,6 +41,7 @@ export default async function fetchgeolocation(city) {
     return {
       city: name,
       country,
+      admin1,
       latitude,
       longitude,
       ...weatherData,
