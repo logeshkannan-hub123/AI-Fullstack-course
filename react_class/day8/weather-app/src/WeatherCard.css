@@ -54,6 +54,24 @@
     text-transform: capitalize;
 }
 
+.card-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f8fafc;
+    border: 1px solid #e2e5e9;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem 0.2rem 0.5rem;
+}
+
+.card-time-icon {
+    font-size: 0.75rem;
+}
+
 .card-icon {
     flex-shrink: 0;
     width: 3rem;

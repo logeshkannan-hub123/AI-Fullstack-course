@@ -24,6 +24,20 @@ function getWeatherInfo(code) {
   return WEATHER_CODES[Number(code)] ?? { icon: "🌡️", label: "Weather" };
 }
 
+function formatTime(time) {
+  if (!time) return "";
+
+  const date = new Date(time);
+
+  if (Number.isNaN(date.getTime())) return time;
+
+  return date.toLocaleString(undefined, {
+    weekday: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function WeatherCard(props) {
   const { icon, label } = getWeatherInfo(props.WeatherCode);
 
@@ -33,7 +47,15 @@ function WeatherCard(props) {
         <div>
           <p className="card-eyebrow">Current Weather</p>
           <h2 className="card-city">{props.city}</h2>
-          <span>{props.country}</span><br /><span>{props.admin1}</span>
+          <span>{props.country}</span>
+          <br />
+          <span>{props.state}</span>
+          <p className="card-time">
+            <span className="card-time-icon" aria-hidden="true">
+              🕒
+            </span>
+            {formatTime(props.time)}
+          </p>
         </div>
         <div className="card-icon" title={label} aria-hidden="true">
           {icon}

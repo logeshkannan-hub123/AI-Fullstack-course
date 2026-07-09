@@ -6,7 +6,7 @@ import WeatherCard from "./WeatherCard";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 
-import fetchgeolocation from "./fetchgeolocation";
+import fetchweather from "./fetchweather";
 
 function App() {
   const [weather, setWeather] = useState(null);
@@ -18,7 +18,7 @@ function App() {
     setError("");
     setWeather(null);
 
-    const result = await fetchgeolocation(city);
+    const result = await fetchweather(city);
 
     if (result.error) {
       setError(result.error);
@@ -45,8 +45,9 @@ function App() {
         {weather && (
           <WeatherCard
             city={weather.city}
+            time={weather.current_weather.time}
             country={weather.country}
-            admin1={weather.admin1}
+            state={weather.state}
             temp={weather.current_weather.temperature}
             WindSpeed={`${weather.current_weather.windspeed} km/h`}
             WindDirection={`${weather.current_weather.winddirection}°`}

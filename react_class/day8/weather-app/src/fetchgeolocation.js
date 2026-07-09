@@ -54,37 +54,17 @@ export default async function fetchgeolocation(city) {
       throw new Error("City not found.");
     }
 
-    const { latitude, longitude, name, country, admin1 } = data.results[0];
+    const { latitude, longitude, name, country, state } = data.results[0];
 
-    // -------------------------
-    // Get Current Weather
-    // -------------------------
-    const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
-      {
-        signal: controller.signal,
-      },
-    );
-
-    if (!weatherResponse.ok) {
-      throw new Error(`Weather API Error (${weatherResponse.status})`);
-    }
-
-    const weatherData = await weatherResponse.json();
-
-    if (!weatherData.current_weather) {
-      throw new Error("Weather data unavailable.");
-    }
 
     clearTimeout(timeout);
 
     return {
       city: name,
       country,
-      admin1,
+      state,
       latitude,
       longitude,
-      current_weather: weatherData.current_weather,
     };
   } catch (error) {
     clearTimeout(timeout);
