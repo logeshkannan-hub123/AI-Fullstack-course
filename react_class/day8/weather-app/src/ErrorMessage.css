@@ -1,0 +1,18 @@
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(254, 242, 242, 0.96);
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(31, 41, 55, 0.15);
+}
+
+.error-icon {
+  flex-shrink: 0;
+  font-size: 1.05rem;
+}
