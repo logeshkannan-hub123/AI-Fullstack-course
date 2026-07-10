@@ -206,7 +206,7 @@ Result: `count = 2` ✅
 
 ---
 
-### prompt 2
+### Prompt 2
 
 > javascript
 > function countwordsinString(str) {
@@ -1010,7 +1010,7 @@ function filterEvenNumbersInArray(arr) {
 
 Did your edge case line up with the type-coercion issue (#2), or were you thinking about something else — like the empty array or non-array input?
 
-## Day 6 (7/72026)
+## Day 6 (7/7/26)
 
 ### Prompt 1
 
@@ -1185,7 +1185,7 @@ This avoids firing a request for empty/whitespace input and normalizes accidenta
 
 Overall the function already follows good practices: `async/await` for readability, `response.ok` checks on both requests, validation that the geocoding API actually returned results, and `null`-on-failure instead of letting the app crash.
 
-### prompt 2
+### Prompt 2
 
 > https://geocoding-api.open-meteo.com/v1/search?name=Chennai&count=1 ,and https://api.open-meteo.com/v1/forecast ?latitude=9.45 &longitude=77.55&current_weather=true
 > this two link document link give to me
@@ -1259,7 +1259,7 @@ These two APIs are all you need to build a complete weather app:
 [1]: https://open-meteo.com/en/docs/geocoding-api?utm_source=chatgpt.com "Geocoding API | Open-Meteo.com"
 [2]: https://open-meteo.com/en/docs?utm_source=chatgpt.com "🌦️ Docs | Open-Meteo.com"
 
-### prompt 3
+### Prompt 3
 
 > https://geocoding-api.open-meteo.com/v1/search?name=Chennai&count=1 ,and https://api.open-meteo.com/v1/forecast ?latitude=9.45 &longitude=77.55&current_weather=true
 > i have this two links give the summery documenent for me.
@@ -1795,66 +1795,67 @@ The two responses summarize **different documentation**. Here's the difference:
 
 ### Prompt 1
 
+> ```javascript
 > export default async function fetchgeolocation(city) {
-> city = city.trim();
-
-if (!city) {
-throw new Error("Please enter a city name.");
-}
-
-try {
-// Get latitude & longitude
-const response = await fetch(
-`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
-);
-
-    if (!response.ok) {
-      throw new Error(`Geocoding API Error (${response.status})`);
-    }
-
-    const data = await response.json();
-
-    if (!data.results || data.results.length === 0) {
-      throw new Error("City not found.");
-    }
-
-    const { latitude, longitude, name, country, admin1 } = data.results[0];
-
-    // Get weather
-    const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
-    );
-
-    if (!weatherResponse.ok) {
-      throw new Error(`Weather API Error (${weatherResponse.status})`);
-    }
-
-    const weatherData = await weatherResponse.json();
-
-    if (!weatherData.current_weather) {
-      throw new Error("Weather data unavailable.");
-    }
-
-    return {
-      city: name,
-      country,
-      admin1,
-      latitude,
-      longitude,
-      ...weatherData,
-    };
-
-} catch (error) {
-console.error(error);
-return {
-error: error.message,
-};
-} finally {
-console.log("fetchgeolocation() completed.");
-}
-}
-
-give the edge case.
+>   city = city.trim();
+>
+>   if (!city) {
+>     throw new Error("Please enter a city name.");
+>   }
+>
+>   try {
+>     // Get latitude & longitude
+>     const response = await fetch(
+>       `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
+>     );
+>
+>     if (!response.ok) {
+>       throw new Error(`Geocoding API Error (${response.status})`);
+>     }
+>
+>     const data = await response.json();
+>
+>     if (!data.results || data.results.length === 0) {
+>       throw new Error("City not found.");
+>     }
+>
+>     const { latitude, longitude, name, country, admin1 } = data.results[0];
+>
+>     // Get weather
+>     const weatherResponse = await fetch(
+>       `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+>     );
+>
+>     if (!weatherResponse.ok) {
+>       throw new Error(`Weather API Error (${weatherResponse.status})`);
+>     }
+>
+>     const weatherData = await weatherResponse.json();
+>
+>     if (!weatherData.current_weather) {
+>       throw new Error("Weather data unavailable.");
+>     }
+>
+>     return {
+>       city: name,
+>       country,
+>       admin1,
+>       latitude,
+>       longitude,
+>       ...weatherData,
+>     };
+>   } catch (error) {
+>     console.error(error);
+>     return {
+>       error: error.message,
+>     };
+>   } finally {
+>     console.log("fetchgeolocation() completed.");
+>   }
+> }
+> ```
+>
+> give the edge case.
 
 ### Response
 
@@ -2185,3 +2186,585 @@ if (!/^[A-Za-z\s-]+$/.test(city)) {
 ```
 
 This will make your function robust against the most common invalid inputs while still allowing valid city names like `"New Delhi"` and `"Los Angeles"`.
+
+## Day 9 (10/7/26)
+
+### Prompt 1
+
+> i iwll do the todo list app in react. enter the task and click or press enter the task trim the white space and dispaly the task in unorderlist each list have complete and delete button click the complete button the task will stick out and change the complete into undo and click undo button unstick out the task and then click the delete button the task will deleted. have any edge case say to me.
+
+### Response 1
+
+Your To-Do List app covers the core CRUD operations (Create, Update, Delete). Here are the edge cases and validations you should handle to make it production-ready.
+
+## 1. Empty Input
+
+**Problem:**
+User clicks **Add** without typing anything.
+
+**Example**
+
+```text
+""
+```
+
+**Expected**
+
+```
+Please enter a task.
+```
+
+---
+
+## 2. Whitespace Only
+
+**Problem**
+
+```text
+"      "
+```
+
+After
+
+```js
+trim();
+```
+
+becomes
+
+```text
+""
+```
+
+**Expected**
+
+Don't add the task.
+
+---
+
+## 3. Multiple Spaces
+
+User enters
+
+```text
+Buy      milk
+```
+
+Convert it into
+
+```text
+Buy milk
+```
+
+using
+
+```js
+task.trim().replace(/\s+/g, " ");
+```
+
+---
+
+## 4. Press Enter
+
+The Enter key should work exactly like clicking **Add**.
+
+```text
+Input
+↓
+
+Enter
+↓
+
+Task Added
+```
+
+---
+
+## 5. Duplicate Tasks
+
+Example
+
+```text
+Buy milk
+Buy milk
+```
+
+Options:
+
+### Option 1 (Recommended)
+
+Allow duplicates because users may actually have two identical tasks.
+
+### Option 2
+
+Prevent duplicates.
+
+```
+Task already exists.
+```
+
+---
+
+## 6. Very Long Task
+
+User pastes
+
+```
+1000+ characters
+```
+
+Limit it.
+
+Example
+
+```text
+Maximum 100 characters.
+```
+
+---
+
+## 7. Leading and Trailing Spaces
+
+Input
+
+```text
+      Learn React
+```
+
+Store
+
+```text
+Learn React
+```
+
+---
+
+## 8. Delete Completed Task
+
+Should work normally.
+
+```
+✓ Learn React
+
+Delete
+
+↓
+
+Removed
+```
+
+---
+
+## 9. Complete Button Multiple Times
+
+Click
+
+```
+Complete
+↓
+
+Undo
+↓
+
+Complete
+↓
+
+Undo
+```
+
+No bugs should occur.
+
+---
+
+## 10. Delete Last Task
+
+If there are no tasks left, show
+
+```
+No tasks yet.
+```
+
+instead of an empty list.
+
+---
+
+## 11. Unique Key
+
+Never use
+
+```jsx
+key = { index };
+```
+
+Instead use
+
+```js
+crypto.randomUUID();
+```
+
+or
+
+```js
+Date.now();
+```
+
+Example
+
+```js
+{
+    id: crypto.randomUUID(),
+    text: task,
+    completed: false
+}
+```
+
+---
+
+## 12. Button Spam
+
+User rapidly clicks
+
+```
+Complete
+Complete
+Complete
+Complete
+```
+
+The app should simply toggle the completed state without creating errors.
+
+---
+
+## 13. Delete While Completed
+
+```
+✓ Buy Milk
+
+Delete
+
+↓
+
+Removed successfully
+```
+
+Should not throw an error.
+
+---
+
+## 14. Case Sensitivity (Optional)
+
+If preventing duplicates:
+
+```
+buy milk
+Buy Milk
+BUY MILK
+```
+
+Treat them as the same by comparing
+
+```js
+task.toLowerCase();
+```
+
+---
+
+## 15. Input Clears After Add
+
+After adding
+
+```
+Buy Milk
+```
+
+the textbox should become
+
+```
+[             ]
+```
+
+and preferably receive focus again.
+
+---
+
+## 16. Prevent Form Refresh
+
+If using a `<form>`,
+
+```js
+event.preventDefault();
+```
+
+Otherwise pressing Enter refreshes the page.
+
+---
+
+## 17. Accessibility
+
+Buttons should have clear labels.
+
+```
+Complete
+Undo
+Delete
+```
+
+Avoid icon-only buttons unless you add accessible labels.
+
+---
+
+## 18. Special Characters
+
+Allow
+
+```
+Buy Milk!
+Pay ₹500
+Call @John
+Task #1
+```
+
+These should be stored normally.
+
+---
+
+## 19. Emoji Support
+
+Should work.
+
+```
+🍕 Order Pizza
+📚 Study React
+🚀 Deploy Project
+```
+
+---
+
+## 20. State Immutability
+
+Never mutate the array directly.
+
+❌
+
+```js
+tasks.push(newTask);
+```
+
+✅
+
+```js
+setTasks([...tasks, newTask]);
+```
+
+or
+
+```js
+setTasks((prev) => [...prev, newTask]);
+```
+
+---
+
+# Recommended Task Object
+
+```js
+{
+    id: crypto.randomUUID(),
+    text: "Learn React",
+    completed: false
+}
+```
+
+---
+
+# Recommended Features
+
+- ✅ Add task
+- ✅ Add using Enter key
+- ✅ Trim whitespace
+- ✅ Collapse multiple spaces into one
+- ✅ Complete task
+- ✅ Undo completed task
+- ✅ Delete task
+- ✅ Empty input validation
+- ✅ Show "No tasks yet" when the list is empty
+- ✅ Clear input after adding
+- ✅ Keep input focused after adding
+- ✅ Use unique IDs instead of array indexes
+- ✅ Prevent page refresh on Enter
+- ✅ Optional duplicate-task prevention
+- ✅ Maximum task length validation (e.g., 100 characters)
+- ✅ Proper immutable state updates
+
+Implementing these edge cases will make your React To-Do app robust and closer to what interviewers expect from a well-designed application.
+
+### Prompt 2
+
+> the todo list page i will refresh the list will gone how to fix it
+
+### Response 2
+
+When you refresh the page, **React state is reset**.
+
+Currently, your tasks are stored only in memory:
+
+```jsx
+const [tasks, setTasks] = useState([]);
+```
+
+When you refresh:
+
+```
+Browser Refresh
+      ↓
+React App Restarts
+      ↓
+tasks = []
+```
+
+So all tasks disappear.
+
+---
+
+## Solution: Use `localStorage`
+
+`localStorage` stores data in the browser even after refreshing or closing the browser.
+
+### Step 1: Load tasks from localStorage
+
+Replace
+
+```jsx
+const [tasks, setTasks] = useState([]);
+```
+
+with
+
+```jsx
+const [tasks, setTasks] = useState(() => {
+  const savedTasks = localStorage.getItem("tasks");
+
+  if (savedTasks) {
+    return JSON.parse(savedTasks);
+  }
+
+  return [];
+});
+```
+
+Using a function (`() => { ... }`) ensures the data is read only once when the component first renders.
+
+---
+
+### Step 2: Save tasks whenever they change
+
+Import `useEffect`.
+
+```jsx
+import { useState, useEffect } from "react";
+```
+
+Then add:
+
+```jsx
+useEffect(() => {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}, [tasks]);
+```
+
+Every time `tasks` changes, React will save it.
+
+Example:
+
+```
+Add Task
+     ↓
+tasks changes
+     ↓
+useEffect runs
+     ↓
+localStorage updated
+```
+
+---
+
+## Complete flow
+
+```
+First Visit
+
+tasks = []
+
+↓
+
+Add "Study React"
+
+↓
+
+localStorage
+
+[
+  {
+    "id":"123",
+    "text":"Study React",
+    "completed":false
+  }
+]
+
+↓
+
+Refresh Page
+
+↓
+
+React starts
+
+↓
+
+Read localStorage
+
+↓
+
+tasks = saved tasks
+
+↓
+
+Task appears again ✅
+```
+
+---
+
+## What is stored?
+
+Open your browser's Developer Tools (**F12**) → **Application** → **Local Storage**.
+
+You'll see something like:
+
+```json
+[
+  {
+    "id": "8d9e2",
+    "text": "Buy Milk",
+    "completed": false
+  },
+  {
+    "id": "4d91a",
+    "text": "Study React",
+    "completed": true
+  }
+]
+```
+
+---
+
+## Is this the best solution?
+
+For a simple Todo List:
+
+- ✅ `localStorage` — Best choice
+- ❌ Database — Not needed
+- ❌ Backend API — Not needed
+- ❌ Cookies — Not suitable for this
+
+For interview-level React Todo apps, `localStorage` is the standard solution to persist tasks across page refreshes.
+
+---

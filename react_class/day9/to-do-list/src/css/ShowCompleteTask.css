@@ -1,0 +1,24 @@
+.filter-btn {
+  padding: 6px 16px;
+  border: 1px solid #e0ddf5;
+  border-radius: 999px;
+  background: #f7f6fd;
+  color: #6a5cf5;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.filter-btn:hover:not(:disabled) {
+  background: #ece9fb;
+  transform: translateY(-1px);
+}
+
+.filter-btn:disabled {
+  background: linear-gradient(135deg, #6a5cf5, #8b6cf0);
+  border-color: transparent;
+  color: #fff;
+  cursor: default;
+}

@@ -1,0 +1,27 @@
+.complete-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e4f8ec;
+  color: #1e9e5a;
+  transition: transform 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.complete-btn:hover {
+  transform: translateY(-1px);
+  background: #d4f2e0;
+}
+
+.complete-btn.undo {
+  background: #fdf1de;
+  color: #b8791a;
+}
+
+.complete-btn.undo:hover {
+  background: #fbe6c4;
+}

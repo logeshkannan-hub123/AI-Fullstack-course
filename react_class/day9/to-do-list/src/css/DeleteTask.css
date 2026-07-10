@@ -1,0 +1,18 @@
+.delete-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fde7e9;
+  color: #d63b4b;
+  transition: transform 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  background: #fad2d6;
+}

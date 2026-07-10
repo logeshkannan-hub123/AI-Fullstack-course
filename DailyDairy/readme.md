@@ -47,3 +47,7 @@ Today I will learnn REST,Status Code, API docs, Nested JSON, Error handling. new
 ## Day 8 (9/7/26)
 
 Today i will learn about react components, Props, vite. how to install react app using vite and create component then how use props.
+
+## Day 9 (10/7/26)
+
+Today i will learn useState, Controlled inputs, useEffect, Lifting state up. i will use those react state and hooks to built the todo list app.

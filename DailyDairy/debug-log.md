@@ -93,3 +93,14 @@ Reviewed a two-step `fetch()` chain (city name → coordinates via geocoding, th
 - Still open: **internal duplicate whitespace isn't collapsed** — `city.trim()` only strips leading/trailing spaces, so `"New   Delhi"` is sent with the extra internal spaces intact. Recommended: `city = city.trim().replace(/\s+/g, " ")`.
 - Still open: **no request timeout/abort** — same gap noted above; still no `AbortController`, so a hung server blocks the UI indefinitely with the spinner showing.
 - Still open: **no re-entrancy guard on the Search button** — rapid repeated clicks can fire multiple concurrent requests, since nothing disables the button while `loading` is `true`. Recommended: `<button disabled={loading}>Search</button>`.
+
+## Day 9 — (10/7/26) — React To-Do List app
+
+Planned a React To-Do List (add task with trim, render as a list, complete/undo, delete) and asked for edge cases up front, before/while building `to-do-list/src/component/`. Checked each against the component code as it now stands.
+
+- Bug found: **empty, whitespace-only, and multi-space input** (e.g. `"   "`, `"Buy      milk"`) wasn't blocked or normalized. **Fixed:** `addTask` now runs `taskText.trim().replace(/\s+/g, " ")` and returns early if the cleaned result is empty, so blank submissions are silently ignored and internal spacing is collapsed.
+- Bug found: **no length limit on pasted text.** **Fixed:** `addTask` rejects (via `alert`) anything over 100 characters; the `<input>` also has `maxLength={100}`, and the Add button is `disabled` while the trimmed value is empty.
+- Design choice: **duplicate tasks.** **Fixed (opinionated):** case-insensitive duplicate check via `tasks.some(...)` blocks a second identical task with an `alert` — took the "prevent duplicates" option over "allow duplicates" from the discussion.
+- Edge case: **Enter key should behave like clicking Add, without reloading the page.** **Fixed:** `handleKeyDown` calls `handleAdd()` on `Enter`; not applicable since the input isn't inside a `<form>`, so there's no default submit behavior to prevent.
+- Edge case: **deleting the last task should show a "no tasks" message instead of an empty list.** **Fixed:** renders `<p>No tasks available.</p>` when `tasks.length === 0`, otherwise the `<ul>`.
+- Bug found: **refreshing the page cleared the task list** — `useState([])` only holds state in memory, so a reload reset `tasks` back to `[]`. **Fixed:** `App.jsx` now lazily initializes `tasks` from `localStorage.getItem("tasks")` (parsed with `JSON.parse`) inside the `useState` initializer, and a `useEffect` keyed on `[tasks]` calls `localStorage.setItem("tasks", JSON.stringify(tasks))` on every change, so the list persists across refreshes.

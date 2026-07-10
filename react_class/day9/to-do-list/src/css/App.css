@@ -1,0 +1,75 @@
+.todo-app {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  box-shadow: 0 20px 45px rgba(45, 27, 90, 0.35);
+  height: fit-content;
+}
+
+.todo-app h1 {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6a5cf5, #b06ce8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 20px;
+}
+
+.todo-app ul {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.todo-app ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.todo-app ul::-webkit-scrollbar-thumb {
+  background: #d8d3f7;
+  border-radius: 10px;
+}
+
+.todo-app li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7f6fd;
+  border: 1px solid #ece9fb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.todo-app li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(106, 92, 245, 0.15);
+}
+
+.todo-app li span {
+  flex: 1;
+  word-break: break-word;
+  font-size: 15px;
+  color: #33314a;
+}
+
+.todo-app li span.completed {
+  text-decoration: line-through;
+  color: #a7a3c2;
+}

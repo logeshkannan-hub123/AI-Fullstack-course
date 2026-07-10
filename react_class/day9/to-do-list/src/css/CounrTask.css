@@ -1,0 +1,15 @@
+.task-count {
+  margin: 0 0 16px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #f0edfd;
+  text-align: center;
+}
+
+.task-count p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6a5cf5;
+  letter-spacing: 0.3px;
+}

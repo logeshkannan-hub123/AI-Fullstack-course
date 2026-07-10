@@ -1,0 +1,42 @@
+.add-task {
+  display: flex;
+  gap: 10px;
+}
+
+.add-task input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #e0ddf5;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.add-task input:focus {
+  border-color: #8b6cf0;
+  box-shadow: 0 0 0 3px rgba(139, 108, 240, 0.15);
+}
+
+.add-task button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6a5cf5, #8b6cf0);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.add-task button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(106, 92, 245, 0.35);
+}
+
+.add-task button:active {
+  transform: translateY(0);
+}
