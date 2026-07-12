@@ -103,3 +103,37 @@ Planned a React To-Do List (add task with trim, render as a list, complete/undo,
 - Design choice: **duplicate tasks.** **Fixed (opinionated):** case-insensitive duplicate check via `tasks.some(...)` blocks a second identical task with an `alert` — took the "prevent duplicates" option over "allow duplicates" from the discussion.
 - Edge case: **Enter key should behave like clicking Add, without reloading the page.** **Fixed:** `handleKeyDown` calls `handleAdd()` on `Enter`; not applicable since the input isn't inside a `<form>`, so there's no default submit behavior to prevent.
 - Edge case: **deleting the last task should show a "no tasks" message instead of an empty list.** **Fixed:** renders `<p>No tasks available.</p>` when `tasks.length === 0`, otherwise the `<ul>`.
+
+## Day 10 — (12/7/26) — Movie Search App edge-case audit
+
+Reviewed the full Movie Search App (`App.jsx`, `SearchBar.jsx`, `MovieList.jsx`, `MovieCard.jsx`, `MovieDetails.jsx`, `Loader.jsx`, `ErrorMessage.jsx`) for edge cases only — discuss-only pass, no fixes applied to any file.
+
+**`App.jsx` — search & details fetch logic**
+
+- Still open: **unencoded search query.** `searchTerm` is interpolated directly into the fetch URL with no `encodeURIComponent`, so `&`, `#`, `%`, `+` in a title (e.g. "Fast & Furious") misparse as extra query params or truncate the URL.
+- Still open: **search term isn't trimmed before the fetch** — only the emptiness check uses `.trim()`; the actual request still sends the untrimmed value, so `"  batman  "` may return different results than `"batman"`.
+- Still open: **no minimum-length validation** — OMDb requires ~3 characters for `s=` searches; shorter queries still fire a real request just to get an API-authored "Too many results." error.
+- Still open: **race condition on overlapping searches** — no `AbortController`/sequence tracking, so a slower earlier response can resolve after a later one and overwrite `movies` with stale results.
+- Still open: **race condition on overlapping "View Details" clicks** — same missing-cancellation gap in `selectMovie`; clicking two different cards quickly can leave the details panel showing whichever request finished last, not the one clicked last.
+- Still open: **shared `loading` boolean** across both `searchMovies` and `selectMovie` — the UI can't distinguish which operation is in flight, and the two can stomp on each other.
+- Still open: **stale `selectedMovie` on a failed details fetch** — `selectMovie`'s `catch` sets an error message but never clears `selectedMovie`, so old movie details stay rendered under an unrelated new error.
+- Still open: **generic bare `catch {}` in both fetches** — network failure, CORS, and JSON-parse errors are all collapsed into one hardcoded message with no branching.
+- Still open: **no `response.ok` check before `response.json()`** in either fetch — a non-2xx response with a JSON/HTML body either parses into unexpected data or throws inside the generic catch.
+- Still open: **missing/invalid `VITE_OMDB_API_KEY` fails silently** — requests go out with `apikey=undefined` and look identical to a network failure.
+- Still open: **`selectMovie` never checks `data.Response === "False"`** — OMDb's details endpoint can return an error payload (e.g. for a bad `imdbID`) that gets stored via `setSelectedMovie(data)` as if it were real movie data, rendering a details panel full of `undefined`s.
+- Still open: **rate-limit responses are indistinguishable from "not found"** — OMDb's daily request cap returns `Response: "False"` with a limit-related `Error`, treated identically to a normal no-match search.
+- Still open: **no button re-entrancy guard** — Search and "View Details" buttons aren't `disabled` while `loading` is true, so rapid clicks fire redundant requests (feeds directly into the race conditions above).
+
+**`MovieList.jsx` / `MovieCard.jsx`**
+
+- Still open: **`Response: "True"` with an empty `Search` array renders nothing** — `MovieList` returns `null` on `movies.length === 0` with no distinct empty-state message; only relies on `App`'s error state from the `"False"` case.
+- Still open: **poster placeholder only checks the literal string `"N/A"`** — `undefined`/`null`/empty-string `Poster` values pass the check and produce a broken-image icon instead of the placeholder.
+- Still open: **`imdbID` assumed unique for the `key` prop** — a duplicate ID in a result set would cause React key-collision warnings and possible state bleed between cards.
+
+**`MovieDetails.jsx`**
+
+- Still open: **individual fields (`Writer`, `Language`, `Country`, `Runtime`, `imdbRating`, etc.) frequently come back as the literal string `"N/A"`** from OMDb for older/obscure/unreleased titles and are rendered as-is (e.g. "IMDb Rating: N/A") with no handling.
+
+**`Loader.jsx` / `ErrorMessage.jsx`**
+
+- Still open: **both can render simultaneously with stale content** — since `App` doesn't gate `MovieList`/`MovieDetails` on `loading`/`error`, a failed follow-up action can leave old results/details on screen alongside a new error message.

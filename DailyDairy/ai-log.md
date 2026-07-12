@@ -2598,3 +2598,166 @@ setTasks((prev) => [...prev, newTask]);
 Implementing these edge cases will make your React To-Do app robust and closer to what interviewers expect from a well-designed application.
 
 ---
+
+## Day 10 (11/7/26)
+
+### Prompt 1
+
+> "I'm building a [movie search] app using [A free public movie API]. Help me draft a one-page plan: core features, a list of components with their props, and how data flows between them then give the api link."
+
+### Response 1
+
+One-page plan for a **Movie Search App** built on the **OMDb API** (a free, public, key-based movie database API).
+
+**Core Features**
+
+1. Search movies by title — debounced search input, hits the API only after the user pauses typing.
+2. Results grid — poster, title, year, type (movie/series) for each match.
+3. Movie details view — click a card to see plot, genre, director, cast, rating, runtime.
+4. Pagination — OMDb returns 10 results per page; "Load more" / page controls for additional pages.
+5. Loading / error / empty states — spinner while fetching, a message for "no results," and a message for network/API errors.
+6. _(Optional stretch)_ Favorites/watchlist — persisted to `localStorage`, same pattern as the To-Do app.
+
+**Components & Props**
+
+| Component        | Props                                  | Responsibility                                                                                                                  |
+| ---------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `App`            | —                                      | Owns all state: `searchTerm`, `movies`, `page`, `totalResults`, `selectedMovie`, `loading`, `error`. Holds the fetch functions. |
+| `SearchBar`      | `value`, `onChange`, `onSubmit`        | Controlled input; debounces and calls `onSubmit(term)`.                                                                         |
+| `MovieList`      | `movies`, `onSelectMovie`              | Renders a grid of `MovieCard`s or an `EmptyState` if `movies.length === 0`.                                                     |
+| `MovieCard`      | `movie`, `onClick`                     | Poster + title + year; clicking calls `onClick(movie.imdbID)`.                                                                  |
+| `MovieDetails`   | `movie`, `onClose`                     | Modal/panel showing full details for the selected movie; fetched separately (search results don't include plot/cast).           |
+| `Pagination`     | `page`, `totalResults`, `onPageChange` | Prev/Next or numbered page buttons.                                                                                             |
+| `LoadingSpinner` | —                                      | Shown while a request is in flight.                                                                                             |
+| `ErrorMessage`   | `message`                              | Shown on fetch failure.                                                                                                         |
+
+**Data Flow**
+
+```
+User types in SearchBar
+        ↓
+App: setSearchTerm (debounced)
+        ↓
+App: fetch(`...&s=${term}&page=${page}`)  →  api.js: searchMovies()
+        ↓
+App: setMovies(results), setTotalResults(...)
+        ↓
+MovieList renders MovieCards from `movies` prop
+        ↓
+User clicks a MovieCard → onSelectMovie(imdbID) → lifted to App
+        ↓
+App: fetch(`...&i=${imdbID}`)  →  api.js: getMovieDetails()
+        ↓
+App: setSelectedMovie(details)
+        ↓
+MovieDetails renders from `selectedMovie` prop
+```
+
+State lives in `App`; children are presentational and communicate upward only via callback props (`onChange`, `onSubmit`, `onSelectMovie`, `onClose`, `onPageChange`) — the same one-way data flow pattern as the To-Do app (`addTask`, `completeTask`, `deleteTask` passed down, state owned by `App`).
+
+**API**
+
+OMDb API — https://www.omdbapi.com/
+
+- Free tier: 1,000 requests/day, requires a free API key (sign up at https://www.omdbapi.com/apikey.aspx).
+- Search: `GET https://www.omdbapi.com/?apikey={key}&s={title}&page={n}`
+- Details: `GET https://www.omdbapi.com/?apikey={key}&i={imdbID}`
+
+---
+
+### Prompt 2
+
+> "I'm building a [movie search] app using [A free public movie API]. Help me draft a one-page plan shot and simple very easy to understand: core features, a list of components with their props, and how data flows between them then give the api link."
+
+### Response 2
+
+A simpler one-page plan for the Movie Search App.
+
+**Core Features**
+
+1. Search bar — user types a movie title, hits enter/search.
+2. Results grid — shows poster, title, year for each match.
+3. Movie details view — click a result to see full info (plot, rating, cast, genre).
+4. Loading & error states — spinner while fetching, a message if no results/API fails.
+
+**Components & Props**
+
+- `App` (top-level, holds state) — `searchTerm`, `movies[]`, `selectedMovie`, `loading`, `error`.
+- `SearchBar` — `onSearch(query)`: callback fired when user submits a search.
+- `MovieList` — `movies`, `onSelectMovie(id)`: renders a `MovieCard` per movie.
+- `MovieCard` — `title`, `poster`, `year`, `onClick()`.
+- `MovieDetails` — `movie`, `onClose()`: shows full data for the selected movie.
+- `Loader` — `isLoading`.
+- `ErrorMessage` — `message`.
+
+**Data Flow**
+
+```
+User types in SearchBar
+        ↓
+SearchBar calls onSearch(query) → App
+        ↓
+App calls the OMDb API
+        ↓
+App stores response in `movies` state
+        ↓
+App passes `movies` down to MovieList
+        ↓
+MovieList renders MovieCard for each movie
+        ↓
+User clicks a MovieCard → onSelectMovie(id) bubbles up to App
+        ↓
+App fetches full details for that movie (by id)
+        ↓
+App stores it in `selectedMovie` → passed to MovieDetails
+        ↓
+MovieDetails renders on screen
+```
+
+Data flows one-way: props down, callbacks up — `App` is the single source of truth.
+
+**API**
+
+OMDb API — https://www.omdbapi.com/
+
+- Requires a free API key (sign up on the site).
+- Search: `https://www.omdbapi.com/?s=batman&apikey=YOUR_KEY`
+- Details by ID: `https://www.omdbapi.com/?i=tt1234567&apikey=YOUR_KEY`
+
+---
+
+### Prompt 3
+
+> Search a title, see a results list, click one for a detail.
+
+### Response 3
+
+Confirmed this is the golden path described in the plan:
+
+1. **Search a title** → `SearchBar` fires `onSearch(query)` → `App` calls the OMDb API.
+2. **See a results list** → `App` passes the returned `movies[]` to `MovieList`, which renders a `MovieCard` per result.
+3. **Click one for a detail** → `MovieCard`'s `onClick` bubbles up to `App` via `onSelectMovie(id)` → `App` fetches that movie's full details → renders `MovieDetails`.
+
+---
+
+### Prompt 4
+
+> Review my React Movie Search App and identify only the edge cases. Do not modify or rewrite my code, and do not provide solutions or fixes.
+>
+> For each edge case, provide:
+>
+> Edge Case Title
+> Description of what could happen
+> Why it matters
+>
+> Only list the edge cases.
+
+### Response 4
+
+Discuss-only edge-case review of the built app (`App.jsx`, `SearchBar.jsx`, `MovieList.jsx`, `MovieCard.jsx`, `MovieDetails.jsx`, `Loader.jsx`, `ErrorMessage.jsx`) — no code changed. Full title/description/why breakdown logged in `debug-log.md` under "Day 10 — Movie Search App edge-case audit"; summary of what was covered:
+
+- **`App.jsx` fetch logic:** unencoded search query, untrimmed search term sent to the API, no minimum-length check, race conditions on overlapping search and "View Details" requests (no `AbortController`), a single `loading` flag shared between two different operations, stale `selectedMovie` left on screen after a failed follow-up fetch, generic bare `catch {}` hiding the real failure type, no `response.ok` check before parsing, a missing/invalid API key failing silently, `selectMovie` never checking `data.Response === "False"` (so an OMDb error payload can render as if it were a real movie), rate-limit responses being indistinguishable from "not found," and no button re-entrancy guard against rapid clicks.
+- **`MovieList.jsx` / `MovieCard.jsx`:** a `"True"` response with an empty `Search` array rendering nothing, the poster placeholder only catching the exact string `"N/A"` (not `undefined`/`null`/empty), and `imdbID` being assumed unique for React's `key` prop.
+- **`MovieDetails.jsx`:** individual fields (`Writer`, `Language`, `Country`, `Runtime`, `imdbRating`, etc.) commonly returning the literal string `"N/A"` from OMDb and being rendered as-is.
+- **`Loader.jsx` / `ErrorMessage.jsx`:** both can render simultaneously with stale results/details since `App` doesn't gate them on `loading`/`error` state.
+
