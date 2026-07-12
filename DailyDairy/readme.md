@@ -51,3 +51,7 @@ Today i will learn about react components, Props, vite. how to install react app
 ## Day 9 (10/7/26)
 
 Today i will learn useState, Controlled inputs, useEffect, Lifting state up. i will use those react state and hooks to built the todo list app.
+
+## Day 10 (11/7/26)
+
+Today i will learn Lists & keys, Conditional rendering, Forms . the last three day lean about react its usefull to me. then i will create the simple mini project **Movie Search: Search a title, see a results list, click one for a detail view.**.
