@@ -55,3 +55,7 @@ Today i will learn useState, Controlled inputs, useEffect, Lifting state up. i w
 ## Day 10 (11/7/26)
 
 Today i will learn Lists & keys, Conditional rendering, Forms . the last three day lean about react its usefull to me. then i will create the simple mini project **Movie Search: Search a title, see a results list, click one for a detail view.**.
+
+## Day 11 (13/7/26)
+
+Today i will learn about Node.js fundamentals. Node runtime, npm & package.json, Modules, File System. learn how to read the file and read the file using the. File system operations are handled by Node.js using its built-in node:fs module.

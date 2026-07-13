@@ -137,3 +137,30 @@ Reviewed the full Movie Search App (`App.jsx`, `SearchBar.jsx`, `MovieList.jsx`,
 **`Loader.jsx` / `ErrorMessage.jsx`**
 
 - Still open: **both can render simultaneously with stale content** — since `App` doesn't gate `MovieList`/`MovieDetails` on `loading`/`error`, a failed follow-up action can leave old results/details on screen alongside a new error message.
+
+## Day 11 — (13/7/26) — `sortNames()` and `CLINoteTakingTool()` (Node `fs/promises` CLI scripts)
+
+Two separate discuss-only edge-case audits — code explained and edge cases enumerated on request, no fixes applied to either file.
+
+**`sortNames()` — reads `input.txt`, sorts names alphabetically, writes `output.txt`**
+
+- Core logic confirmed correct: `readFile` → `split("\n")` → `trim()` each line → `filter` out empty lines → `sort` via `localeCompare` → `join("\n")` → `writeFile`, all wrapped in `try/catch`.
+- Confirmed fine, no fix needed: a missing `input.txt` correctly falls into `catch` (`ENOENT`); an empty or blank-lines-only file correctly produces an empty `output.txt` with no crash; file permission errors (`EACCES`/`EPERM`) on either read or write are already caught.
+- Still open: **duplicate names are preserved, not deduped** — sorting doesn't remove repeats since there's no uniqueness step.
+- Still open: **case sensitivity is locale-dependent** — `localeCompare()` uses default locale rules, so the relative order of e.g. `"apple"` vs `"Banana"` can vary by environment; no explicit case-folding.
+- Still open: **numeric substrings sort lexicographically, not numerically** — `"John1"`, `"John10"`, `"John2"` sort as strings, so `"John10"` lands before `"John2"`.
+- Still open: **very large input files load entirely into memory** via `readFile()` — no streaming, so extremely large files risk high memory usage or an out-of-memory failure.
+- Minor/incidental: **Windows `\r\n` line endings** aren't explicitly handled, but `trim()` happens to strip the trailing `\r` left after `split("\n")`, so this works correctly by side effect rather than by design.
+
+**`CLINoteTakingTool()` — writes a CLI-provided name to `output.txt`**
+
+- Still open: **no argument provided** (`node file.js`) — `process.argv[2]` is `undefined`, producing `"Hello, undefined!"` instead of a usage message. Recommended: `if (!name) { ...; return; }`.
+- Still open: **empty-string or whitespace-only argument** (`node file.js ""` / `"   "`) isn't rejected — produces `"Hello,"` with nothing after it. Recommended: `if (!name.trim()) { ...; return; }`.
+- Still open: **multi-word names are truncated** — `node file.js John Doe` only captures `"John"`, since `process.argv[2]` grabs a single argv element. Recommended: `process.argv.slice(2).join(" ")` to capture the full name.
+- Still open: **no character validation** — special characters (e.g. `"@#$%^"`) pass through unfiltered into both the console output and the written file. Recommended: `/^[A-Za-z ]+$/` check if only alphabetic names should be allowed.
+- Still open: **no numeric-input rejection** — `node file.js 12345` writes `"Hello, 12345"` with no digit check. Recommended: `/\d/.test(name)` guard if names must be non-numeric.
+- Still open: **no length limit** — arbitrarily long input is written to `output.txt` as-is. Recommended: reject input over ~100 characters.
+- Still open: **leading/trailing spaces aren't trimmed before storing** — `"   Logesh   "` is stored with surrounding whitespace intact. Recommended: `process.argv.slice(2).join(" ").trim()`.
+- Still open: **`output.txt` is silently overwritten on every run** with no existence check. Recommended: `{ flag: "wx" }` on `writeFile` if overwriting should be prevented.
+- Still open: **no `SIGINT` (Ctrl+C) handling** — the process exits immediately with no cleanup message; an optional `process.on("SIGINT", ...)` handler was suggested.
+- Confirmed fine, no fix needed: disk-full (`ENOSPC`), invalid path (`ENOENT`/`EACCES`), and unexpected runtime errors are already covered by the existing generic `catch`, and UTF-8 encoding is already specified correctly.

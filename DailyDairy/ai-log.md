@@ -2761,3 +2761,982 @@ Discuss-only edge-case review of the built app (`App.jsx`, `SearchBar.jsx`, `Mov
 - **`MovieDetails.jsx`:** individual fields (`Writer`, `Language`, `Country`, `Runtime`, `imdbRating`, etc.) commonly returning the literal string `"N/A"` from OMDb and being rendered as-is.
 - **`Loader.jsx` / `ErrorMessage.jsx`:** both can render simultaneously with stale results/details since `App` doesn't gate them on `loading`/`error` state.
 
+## day 11 (13/7/26)
+
+### Prompt 1
+
+> import { readFile, writeFile } from "node:fs/promises";
+
+async function sortNames() {
+try {
+// Read the input file
+const data = await readFile("input.txt", "utf8");
+// console.log("input.txt data", data);
+
+    // Split into lines, remove empty lines, trim spaces
+    const names = data
+      .split("\n")
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0);
+
+    // console.log("names", names);
+
+    // Sort the names alphabetically
+    names.sort((a, b) => a.localeCompare(b));
+    // console.log("sort names", names);
+
+    // // Write the sorted names to output.txt
+    await writeFile("output.txt", names.join("\n"), "utf8");
+
+    console.log("Names sorted successfully!");
+    console.log("Sorted names have been written to output.txt");
+
+} catch (error) {
+console.error("Error:", error.message);
+}
+}
+
+// Call the function
+sortNames();
+
+> Explain code and any edge case say to me but not modify the code.
+
+### Response
+
+Your code is correct and follows a simple asynchronous file processing flow. Here's a detailed explanation of each part and the possible edge cases without modifying the code.
+
+---
+
+# Code Explanation
+
+## 1. Import `readFile` and `writeFile`
+
+```javascript
+import { readFile, writeFile } from "node:fs/promises";
+```
+
+### What it does
+
+- Imports the Promise-based File System methods.
+- `readFile()` reads a file asynchronously.
+- `writeFile()` writes data asynchronously.
+
+### Why use `fs/promises`?
+
+Instead of callbacks,
+
+```javascript
+readFile(file, (err, data) => {});
+```
+
+you can write
+
+```javascript
+await readFile(file);
+```
+
+which is cleaner and easier to read.
+
+---
+
+# 2. Create an async function
+
+```javascript
+async function sortNames() {
+```
+
+### What it does
+
+Creates an asynchronous function so `await` can be used inside it.
+
+Without `async`, using `await` would throw an error.
+
+---
+
+# 3. Try block
+
+```javascript
+try {
+```
+
+### Purpose
+
+All file operations may fail.
+
+Examples:
+
+- file not found
+- permission denied
+- invalid encoding
+
+The `try` block catches these errors.
+
+---
+
+# 4. Read the file
+
+```javascript
+const data = await readFile("input.txt", "utf8");
+```
+
+### What happens?
+
+Suppose `input.txt` contains
+
+```
+John
+Alice
+David
+Bob
+```
+
+Then
+
+```javascript
+data;
+```
+
+becomes
+
+```
+John
+Alice
+David
+Bob
+```
+
+as one string.
+
+Because of `"utf8"`,
+
+without it
+
+```javascript
+<Buffer 4a 6f 68 6e ...>
+```
+
+would be returned.
+
+With `"utf8"`
+
+```javascript
+"John\nAlice\nDavid\nBob";
+```
+
+is returned.
+
+---
+
+# 5. Split into lines
+
+```javascript
+.split("\n")
+```
+
+If
+
+```
+John
+Alice
+David
+Bob
+```
+
+Then
+
+```javascript
+["John", "Alice", "David", "Bob"];
+```
+
+---
+
+# 6. Remove unwanted spaces
+
+```javascript
+.map((name) => name.trim())
+```
+
+Suppose
+
+```
+ John
+ Alice
+Bob
+```
+
+becomes
+
+```javascript
+["John", "Alice", "Bob"];
+```
+
+because `trim()` removes
+
+- leading spaces
+- trailing spaces
+- tabs
+- extra whitespace at both ends
+
+---
+
+# 7. Remove empty lines
+
+```javascript
+.filter((name) => name.length > 0);
+```
+
+Suppose file is
+
+```
+John
+
+Alice
+
+Bob
+```
+
+After `split()`
+
+```javascript
+["John", "", "Alice", "", "Bob"];
+```
+
+After `filter`
+
+```javascript
+["John", "Alice", "Bob"];
+```
+
+Only non-empty names remain.
+
+---
+
+# 8. Sort alphabetically
+
+```javascript
+names.sort((a, b) => a.localeCompare(b));
+```
+
+Suppose
+
+```javascript
+["John", "Alice", "David", "Bob"];
+```
+
+becomes
+
+```javascript
+["Alice", "Bob", "David", "John"];
+```
+
+### Why `localeCompare()`?
+
+It compares strings according to language-aware sorting rules rather than comparing Unicode values directly.
+
+---
+
+# 9. Write output file
+
+```javascript
+await writeFile("output.txt", names.join("\n"), "utf8");
+```
+
+### `join("\n")`
+
+Converts
+
+```javascript
+["Alice", "Bob", "David"];
+```
+
+into
+
+```
+Alice
+Bob
+David
+```
+
+Then writes it to
+
+```
+output.txt
+```
+
+---
+
+# 10. Success message
+
+```javascript
+console.log("Names sorted successfully!");
+console.log("Sorted names have been written to output.txt");
+```
+
+Runs only if everything succeeds.
+
+---
+
+# 11. Catch block
+
+```javascript
+catch (error) {
+    console.error("Error:", error.message);
+}
+```
+
+If any error occurs,
+
+for example
+
+```
+input.txt not found
+```
+
+Output
+
+```
+Error: ENOENT: no such file or directory...
+```
+
+instead of crashing the program.
+
+---
+
+# 12. Function call
+
+```javascript
+sortNames();
+```
+
+Starts the program.
+
+Without this line, the function is defined but never executed.
+
+---
+
+# Program Flow
+
+```
+Start
+   │
+   ▼
+Read input.txt
+   │
+   ▼
+Split into lines
+   │
+   ▼
+Trim spaces
+   │
+   ▼
+Remove empty lines
+   │
+   ▼
+Sort alphabetically
+   │
+   ▼
+Join into one string
+   │
+   ▼
+Write output.txt
+   │
+   ▼
+Success message
+```
+
+---
+
+# Edge Cases
+
+## 1. `input.txt` does not exist
+
+Example
+
+```
+(no file)
+```
+
+Result
+
+```
+ENOENT
+```
+
+Your `catch` block handles this gracefully.
+
+---
+
+## 2. Empty file
+
+```
+(empty)
+```
+
+After processing
+
+```javascript
+[];
+```
+
+Output file
+
+```
+(empty)
+```
+
+No error occurs.
+
+---
+
+## 3. File contains only blank lines
+
+```
+
+
+
+
+```
+
+After filtering
+
+```javascript
+[];
+```
+
+Output file is empty.
+
+---
+
+## 4. Names with extra spaces
+
+Input
+
+```
+ Alice
+Bob
+Charlie
+```
+
+After `trim()`
+
+```javascript
+Alice;
+Bob;
+Charlie;
+```
+
+Spaces around names are removed.
+
+---
+
+## 5. Duplicate names
+
+Input
+
+```
+John
+Alice
+John
+Bob
+```
+
+Output
+
+```
+Alice
+Bob
+John
+John
+```
+
+Duplicates are preserved because the code only sorts; it does not remove duplicates.
+
+---
+
+## 6. Uppercase and lowercase letters
+
+Input
+
+```
+apple
+Banana
+cat
+Apple
+```
+
+`localeCompare()` sorts based on locale rules, so the exact ordering can vary depending on the environment's locale settings. If case sensitivity matters, you would need to specify options, but your current code simply uses the default behavior.
+
+---
+
+## 7. Special characters
+
+Input
+
+```
+John
+@Alex
+#Bob
+David
+```
+
+These entries are sorted according to `localeCompare()`'s rules, which consider punctuation and locale-aware ordering.
+
+---
+
+## 8. Numbers in names
+
+Input
+
+```
+John2
+John10
+John1
+```
+
+These are sorted as strings (lexicographically), not as numeric values.
+
+---
+
+## 9. Very large file
+
+If `input.txt` contains millions of names:
+
+- `readFile()` loads the entire file into memory.
+- Memory usage may become high.
+- Performance may decrease or the process may run out of memory for extremely large files.
+
+For normal-sized files, this approach works well.
+
+---
+
+## 10. File permission issues
+
+If your program cannot read `input.txt` or cannot create/write `output.txt` due to permissions, `readFile()` or `writeFile()` will throw an error, which is caught by the `catch` block.
+
+---
+
+## 11. Different line endings
+
+On Windows, text files commonly use `\r\n` line endings.
+
+Example:
+
+```
+John\r\nAlice\r\nBob
+```
+
+After splitting on `"\n"`, each line (except possibly the last) ends with `\r`. Your use of `trim()` removes those carriage returns, so the names are still processed correctly.
+
+---
+
+# Time and Space Complexity
+
+- **Reading the file:** `O(n)` where `n` is the file size.
+- **Splitting and trimming:** `O(n)`.
+- **Sorting:** `O(k log k)` where `k` is the number of names.
+- **Writing the file:** `O(n)`.
+
+Overall, the dominant operation is sorting, so the time complexity is **O(k log k)**. The space complexity is **O(n)** because the entire file contents and the array of names are held in memory.
+
+### Prompt 2
+
+> import { writeFile } from "node:fs/promises";
+
+// const name = process.argv[2];
+// console.log(`Hello, ${name}!`);
+
+async function CLINoteTakingTool() {
+try {
+const name = process.argv[2];
+console.log(`Hello, ${name}!`);
+
+    // // Write the sorted names to output.txt
+    await writeFile("output.txt", `hello,${name}`, "utf8");
+
+    console.log("written to output.txt");
+
+} catch (error) {
+console.error("Error:", error.message);
+}
+}
+
+CLINoteTakingTool();
+
+give the edge case.
+
+### Response
+
+Your code works for the happy path, but there are several edge cases you should handle to make it production-ready.
+
+## Current Code
+
+```js
+import { writeFile } from "node:fs/promises";
+
+async function CLINoteTakingTool() {
+  try {
+    const name = process.argv[2];
+    console.log(`Hello, ${name}!`);
+
+    await writeFile("output.txt", `Hello, ${name}`, "utf8");
+
+    console.log("Written to output.txt");
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
+CLINoteTakingTool();
+```
+
+---
+
+# Edge Cases
+
+## 1. No command-line argument
+
+### Problem
+
+```bash
+node file.js
+```
+
+Output
+
+```
+Hello, undefined!
+```
+
+### Fix
+
+Check if a name is provided.
+
+```js
+if (!name) {
+  console.log("Usage: node file.js <name>");
+  return;
+}
+```
+
+---
+
+## 2. Empty string
+
+Someone runs
+
+```bash
+node file.js ""
+```
+
+Output
+
+```
+Hello,
+```
+
+### Fix
+
+```js
+if (!name.trim()) {
+  console.log("Name cannot be empty.");
+  return;
+}
+```
+
+---
+
+## 3. Name contains only spaces
+
+```bash
+node file.js "     "
+```
+
+Output
+
+```
+Hello,
+```
+
+### Fix
+
+```js
+if (!name.trim()) {
+  console.log("Please enter a valid name.");
+  return;
+}
+```
+
+---
+
+## 4. Multiple words
+
+User enters
+
+```bash
+node file.js John Doe
+```
+
+Output
+
+```
+Hello, John!
+```
+
+because
+
+```js
+process.argv[2];
+```
+
+only returns
+
+```
+John
+```
+
+### Better solution
+
+```js
+const name = process.argv.slice(2).join(" ");
+```
+
+Now
+
+```bash
+node file.js John Doe
+```
+
+Output
+
+```
+Hello, John Doe!
+```
+
+---
+
+## 5. Special characters
+
+Input
+
+```bash
+node file.js "@#$%^"
+```
+
+Output
+
+```
+Hello, @#$%^
+```
+
+If your application only accepts alphabetic names, validate it.
+
+Example
+
+```js
+const regex = /^[A-Za-z ]+$/;
+
+if (!regex.test(name)) {
+  console.log("Name should contain only letters.");
+  return;
+}
+```
+
+---
+
+## 6. Extremely long input
+
+Someone enters
+
+```bash
+node file.js aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa....
+```
+
+Thousands of characters.
+
+It may create a huge file.
+
+Limit the length.
+
+```js
+if (name.length > 100) {
+  console.log("Name is too long.");
+  return;
+}
+```
+
+---
+
+## 7. File permission error
+
+If
+
+```
+output.txt
+```
+
+cannot be created or written,
+
+Node throws
+
+```
+EACCES
+```
+
+or
+
+```
+EPERM
+```
+
+Your
+
+```js
+try...catch
+```
+
+already handles this.
+
+---
+
+## 8. Disk full
+
+Possible error
+
+```
+ENOSPC
+```
+
+Again,
+
+```js
+catch(error)
+```
+
+handles it.
+
+---
+
+## 9. Invalid file path
+
+If writing to
+
+```js
+await writeFile("/system/output.txt", ...)
+```
+
+it may throw
+
+```
+ENOENT
+```
+
+or
+
+```
+EACCES
+```
+
+---
+
+## 10. Encoding issue
+
+Always specify
+
+```js
+"utf8";
+```
+
+which you already do.
+
+---
+
+## 11. Existing output file
+
+`writeFile()` overwrites the file.
+
+If you don't want that, check whether the file exists first.
+
+Or use
+
+```js
+await writeFile("output.txt", text, {
+  encoding: "utf8",
+  flag: "wx",
+});
+```
+
+`wx` means "create the file only if it doesn't already exist."
+
+---
+
+## 12. User enters numbers
+
+```bash
+node file.js 12345
+```
+
+Output
+
+```
+Hello, 12345
+```
+
+If only names are allowed,
+
+```js
+if (/\d/.test(name)) {
+  console.log("Numbers are not allowed.");
+  return;
+}
+```
+
+---
+
+## 13. Leading/trailing spaces
+
+Input
+
+```bash
+node file.js "   Logesh   "
+```
+
+Store
+
+```js
+const name = process.argv.slice(2).join(" ").trim();
+```
+
+instead of
+
+```
+"   Logesh   "
+```
+
+---
+
+## 14. User presses Ctrl+C
+
+The process exits immediately.
+
+Optionally handle it.
+
+```js
+process.on("SIGINT", () => {
+  console.log("\nProgram cancelled.");
+  process.exit(0);
+});
+```
+
+---
+
+## 15. Unexpected errors
+
+Keep the generic catch.
+
+```js
+catch (error) {
+    console.error("Unexpected Error:", error.message);
+}
+```
+
+---
