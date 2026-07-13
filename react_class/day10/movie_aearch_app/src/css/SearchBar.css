@@ -43,7 +43,6 @@
   border-radius: var(--radius);
   cursor: pointer;
   transition:
-    background 0.15s ease,
     transform 0.05s ease;
 }
 
