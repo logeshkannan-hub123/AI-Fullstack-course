@@ -59,21 +59,19 @@ app.post("/AddMovie", (req, res) => {
   tamilMovies.push(newMovie);
   res
     .status(201)
-    .json({ message: "Movie added successfully!", data: newMovie });
+    .json({ message: "Movie added successfully!", data: tamilMovies });
 });
 
 app.put("/movies/:id", (req, res) => {
   const movieId = parseInt(req.params.id);
 
-  const movieIndex = tamilMovies.findIndex((m) => m.id === movieId);
+  const movie = tamilMovies.find((m) => m.id === movieId);
 
-  if (movieIndex === -1) {
+  if (movie === -1) {
     return res.status(404).json({
       message: `Movie with ID ${movieId} not found.`,
     });
   }
-
-  const movie = tamilMovies[movieIndex];
 
   const {
     MovieTitle,
@@ -86,8 +84,7 @@ app.put("/movies/:id", (req, res) => {
     Release_Date,
   } = req.body;
 
-  tamilMovies[movieIndex] = {
-    ...movie, // Keep existing values
+  tamilMovies[movie] = {
     MovieTitle: MovieTitle,
     Director: Director,
     Starring: Starring,
@@ -100,7 +97,7 @@ app.put("/movies/:id", (req, res) => {
 
   res.status(200).json({
     message: "Movie updated successfully!",
-    data: tamilMovies[movieIndex],
+    data: tamilMovies[movie],
   });
 });
 
