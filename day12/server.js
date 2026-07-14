@@ -1,12 +1,21 @@
 import express from "express";
+import fs from "fs";
 import tamilMovies from "./movie_details.js";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 let nextId = 11;
+
+function saveMovies() {
+  const fileData = `const tamilMovies = ${JSON.stringify(tamilMovies, null, 2)};
+  
+export default tamilMovies;
+`;
+
+  fs.writeFileSync("./movie_details.js", fileData);
+}
 
 app.get("/movies", (req, res) => {
   res.status(200).json(tamilMovies);
@@ -57,6 +66,9 @@ app.post("/AddMovie", (req, res) => {
   };
 
   tamilMovies.push(newMovie);
+
+  saveMovies();
+
   res
     .status(201)
     .json({ message: "Movie added successfully!", data: newMovie });
@@ -96,6 +108,8 @@ app.put("/movies/:id", (req, res) => {
     Release_Date,
   };
 
+  saveMovies();
+
   res.status(200).json({
     message: "Movie updated successfully!",
     data: tamilMovies[movieIndex],
@@ -105,6 +119,7 @@ app.put("/movies/:id", (req, res) => {
 app.delete("/movies/:id", (req, res) => {
   const movieId = parseInt(req.params.id);
   const movieIndex = tamilMovies.findIndex((movie) => movie.id === movieId);
+  // console.log(movieIndex);
 
   if (movieIndex === -1) {
     return res
@@ -114,6 +129,8 @@ app.delete("/movies/:id", (req, res) => {
 
   // Remove the object from the array
   const deletedMovie = tamilMovies.splice(movieIndex, 1);
+
+  saveMovies();
 
   res
     .status(200)

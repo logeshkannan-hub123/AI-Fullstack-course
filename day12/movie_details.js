@@ -1,124 +1,196 @@
 const tamilMovies = [
   {
-    id: 1,
-    MovieTitle: "Leo",
-    Director: "Lokesh Kanagaraj",
-    Starring: ["Vijay", "Sanjay Dutt", "Trisha Krishnan", "Arjun Sarja"],
-    Quality: "WEB-DL 4K",
-    Genres: ["Action", "Crime", "Thriller"],
-    Language: "Tamil",
-    Movie_Rating: "7.2/10",
-    Release_Date: "2023-10-19",
+    "id": 1,
+    "MovieTitle": "Leo",
+    "Director": "Lokesh Kanagaraj",
+    "Starring": [
+      "Vijay",
+      "Sanjay Dutt",
+      "Trisha Krishnan",
+      "Arjun Sarja"
+    ],
+    "Quality": "WEB-DL 4K",
+    "Genres": [
+      "Action",
+      "Crime",
+      "Thriller"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "7.2/10",
+    "Release_Date": "2023-10-19"
   },
   {
-    id: 2,
-    MovieTitle: "Jailer",
-    Director: "Nelson Dilipkumar",
-    Starring: ["Rajinikanth", "Vinayakan", "Ramya Krishnan", "Vasanth Ravi"],
-    Quality: "WEB-DL 4K",
-    Genres: ["Action", "Comedy", "Crime"],
-    Language: "Tamil",
-    Movie_Rating: "7.1/10",
-    Release_Date: "2023-08-10",
+    "id": 2,
+    "MovieTitle": "Jailer",
+    "Director": "Nelson Dilipkumar",
+    "Starring": [
+      "Rajinikanth",
+      "Vinayakan",
+      "Ramya Krishnan",
+      "Vasanth Ravi"
+    ],
+    "Quality": "WEB-DL 4K",
+    "Genres": [
+      "Action",
+      "Comedy",
+      "Crime"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "7.1/10",
+    "Release_Date": "2023-08-10"
   },
   {
-    id: 3,
-    MovieTitle: "Vikram",
-    Director: "Lokesh Kanagaraj",
-    Starring: ["Kamal Haasan", "Vijay Sethupathi", "Fahadh Faasil", "Narain"],
-    Quality: "BluRay 4K",
-    Genres: ["Action", "Thriller"],
-    Language: "Tamil",
-    Movie_Rating: "8.3/10",
-    Release_Date: "2022-06-03",
+    "id": 3,
+    "MovieTitle": "Vikram",
+    "Director": "Lokesh Kanagaraj",
+    "Starring": [
+      "Kamal Haasan",
+      "Vijay Sethupathi",
+      "Fahadh Faasil",
+      "Narain"
+    ],
+    "Quality": "BluRay 4K",
+    "Genres": [
+      "Action",
+      "Thriller"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "8.3/10",
+    "Release_Date": "2022-06-03"
   },
   {
-    id: 4,
-    MovieTitle: "Master",
-    Director: "Lokesh Kanagaraj",
-    Starring: [
+    "id": 4,
+    "MovieTitle": "Master",
+    "Director": "Lokesh Kanagaraj",
+    "Starring": [
       "Vijay",
       "Vijay Sethupathi",
       "Malavika Mohanan",
-      "Andrea Jeremiah",
+      "Andrea Jeremiah"
     ],
-    Quality: "BluRay 1080p",
-    Genres: ["Action", "Drama", "Thriller"],
-    Language: "Tamil",
-    Movie_Rating: "7.3/10",
-    Release_Date: "2021-01-13",
+    "Quality": "BluRay 1080p",
+    "Genres": [
+      "Action",
+      "Drama",
+      "Thriller"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "7.3/10",
+    "Release_Date": "2021-01-13"
   },
   {
-    id: 5,
-    MovieTitle: "Ponniyin Selvan: I",
-    Director: "Mani Ratnam",
-    Starring: ["Vikram", "Karthi", "Aishwarya Rai Bachchan", "Jayam Ravi"],
-    Quality: "BluRay 4K",
-    Genres: ["Action", "Drama", "History"],
-    Language: "Tamil",
-    Movie_Rating: "7.6/10",
-    Release_Date: "2022-09-30",
+    "id": 5,
+    "MovieTitle": "Ponniyin Selvan: I",
+    "Director": "Mani Ratnam",
+    "Starring": [
+      "Vikram",
+      "Karthi",
+      "Aishwarya Rai Bachchan",
+      "Jayam Ravi"
+    ],
+    "Quality": "BluRay 4K",
+    "Genres": [
+      "Action",
+      "Drama",
+      "History"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "7.6/10",
+    "Release_Date": "2022-09-30"
   },
   {
-    id: 6,
-    MovieTitle: "Ponniyin Selvan: II",
-    Director: "Mani Ratnam",
-    Starring: ["Vikram", "Karthi", "Jayam Ravi", "Trisha Krishnan"],
-    Quality: "BluRay 4K",
-    Genres: ["Action", "Drama", "History"],
-    Language: "Tamil",
-    Movie_Rating: "7.7/10",
-    Release_Date: "2023-04-28",
+    "id": 6,
+    "MovieTitle": "Ponniyin Selvan: II",
+    "Director": "Mani Ratnam",
+    "Starring": [
+      "Vikram",
+      "Karthi",
+      "Jayam Ravi",
+      "Trisha Krishnan"
+    ],
+    "Quality": "BluRay 4K",
+    "Genres": [
+      "Action",
+      "Drama",
+      "History"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "7.7/10",
+    "Release_Date": "2023-04-28"
   },
   {
-    id: 7,
-    MovieTitle: "Kaithi",
-    Director: "Lokesh Kanagaraj",
-    Starring: ["Karthi", "Narain", "George Maryan", "Arjun Das"],
-    Quality: "BluRay 1080p",
-    Genres: ["Action", "Thriller"],
-    Language: "Tamil",
-    Movie_Rating: "8.4/10",
-    Release_Date: "2019-10-25",
+    "id": 7,
+    "MovieTitle": "Kaithi",
+    "Director": "Lokesh Kanagaraj",
+    "Starring": [
+      "Karthi",
+      "Narain",
+      "George Maryan",
+      "Arjun Das"
+    ],
+    "Quality": "BluRay 1080p",
+    "Genres": [
+      "Action",
+      "Thriller"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "8.4/10",
+    "Release_Date": "2019-10-25"
   },
   {
-    id: 8,
-    MovieTitle: "Thunivu",
-    Director: "H. Vinoth",
-    Starring: ["Ajith Kumar", "Manju Warrier", "Samuthirakani", "John Kokken"],
-    Quality: "WEB-DL 1080p",
-    Genres: ["Action", "Crime", "Thriller"],
-    Language: "Tamil",
-    Movie_Rating: "6.9/10",
-    Release_Date: "2023-01-11",
+    "id": 8,
+    "MovieTitle": "Thunivu",
+    "Director": "H. Vinoth",
+    "Starring": [
+      "Ajith Kumar",
+      "Manju Warrier",
+      "Samuthirakani",
+      "John Kokken"
+    ],
+    "Quality": "WEB-DL 1080p",
+    "Genres": [
+      "Action",
+      "Crime",
+      "Thriller"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "6.9/10",
+    "Release_Date": "2023-01-11"
   },
   {
-    id: 9,
-    MovieTitle: "Soorarai Pottru",
-    Director: "Sudha Kongara",
-    Starring: ["Suriya", "Aparna Balamurali", "Paresh Rawal", "Urvashi"],
-    Quality: "WEB-DL 4K",
-    Genres: ["Drama", "Biography"],
-    Language: "Tamil",
-    Movie_Rating: "8.7/10",
-    Release_Date: "2020-11-12",
-  },
-  {
-    id: 10,
-    MovieTitle: "96",
-    Director: "C. Prem Kumar",
-    Starring: [
+    "id": 10,
+    "MovieTitle": "96",
+    "Director": "C. Prem Kumar",
+    "Starring": [
       "Vijay Sethupathi",
       "Trisha Krishnan",
       "Devadarshini",
-      "Bagavathi Perumal",
+      "Bagavathi Perumal"
     ],
-    Quality: "BluRay 1080p",
-    Genres: ["Drama", "Romance"],
-    Language: "Tamil",
-    Movie_Rating: "8.5/10",
-    Release_Date: "2018-10-04",
+    "Quality": "BluRay 1080p",
+    "Genres": [
+      "Drama",
+      "Romance"
+    ],
+    "Language": "Tamil",
+    "Movie_Rating": "8.5/10",
+    "Release_Date": "2018-10-04"
   },
+  {
+    "id": 11,
+    "MovieTitle": "Sita Ramam",
+    "Director": "Sita Ramam",
+    "Starring": [
+      "Dulquer Salmaan",
+      "Mrunal Thakur",
+      "Rashmika Mandanna"
+    ],
+    "Quality": "Original HD",
+    "Genres": "Drama",
+    "Language": "Tamil",
+    "Movie_Rating": "8.0/10",
+    "Release_Date": "5 August 2022"
+  }
 ];
-
+  
 export default tamilMovies;

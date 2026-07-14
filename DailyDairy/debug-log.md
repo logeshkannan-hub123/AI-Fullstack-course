@@ -164,3 +164,18 @@ Two separate discuss-only edge-case audits — code explained and edge cases enu
 - Still open: **`output.txt` is silently overwritten on every run** with no existence check. Recommended: `{ flag: "wx" }` on `writeFile` if overwriting should be prevented.
 - Still open: **no `SIGINT` (Ctrl+C) handling** — the process exits immediately with no cleanup message; an optional `process.on("SIGINT", ...)` handler was suggested.
 - Confirmed fine, no fix needed: disk-full (`ENOSPC`), invalid path (`ENOENT`/`EACCES`), and unexpected runtime errors are already covered by the existing generic `catch`, and UTF-8 encoding is already specified correctly.
+
+## Day 12 - (14/07/2026) — Express CRUD API on `movie_details.js`
+
+Context: `movie_details.js` (10 hardcoded Tamil movie objects) was generated as mock data, then wired into an Express CRUD API (`server.js`) with `GET /movies`, `GET /movies/:id`, `POST /AddMovie`, `PUT /movies/:id`, `DELETE /movies/:id`.
+
+**`POST /AddMovie` — reported as "data will not create in the `movie_details.js` file"**
+
+- Reported as a bug: after `POST /AddMovie` succeeds (`201` response with the new movie), the new movie doesn't show up in `movie_details.js` on disk.
+- **Diagnosis: not a bug — expected behavior, not a real defect.** `tamilMovies.push(newMovie)` only mutates the **in-memory array** held by the running Node process. `movie_details.js` is a source file — importing it doesn't create a live link back to disk; Node reads it once at startup and never rewrites it. Restarting the server re-imports the original file, so the added movie disappears.
+- Still open (design decision, discuss-only — nothing applied to `server.js`/`movie_details.js` yet): three persistence options were laid out —
+  1. **Recommended:** move to a real database (MySQL, MongoDB, PostgreSQL, SQLite).
+  2. **Recommended for a beginner/learning project:** replace `movie_details.js` with a `movies.json` file and use the `fs` module to read/write it after each mutating request (`POST`/`PUT`/`DELETE`).
+  3. **Not recommended:** rewrite `movie_details.js` itself at runtime via `fs.writeFileSync(..., JSON.stringify(tamilMovies))` — technically works, but editing your own source file at runtime is bad practice.
+- No code changed this session; routes remain as originally written pending a decision on which persistence approach to adopt.
+

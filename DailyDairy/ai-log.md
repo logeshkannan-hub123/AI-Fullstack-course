@@ -3740,3 +3740,415 @@ catch (error) {
 ```
 
 ---
+
+## Day 12 (14/07/26)
+
+### Prompt 1
+
+> hey chatGPT you give the 10 real movie details in array of object . Movietitle,Director,Starring,Quality,Genres,Language,Movir_Rating,Release_Date.
+
+### Response
+
+```javascript
+const tamilMovies = [
+  {
+    MovieTitle: "Leo",
+    Director: "Lokesh Kanagaraj",
+    Starring: ["Vijay", "Sanjay Dutt", "Trisha Krishnan", "Arjun Sarja"],
+    Quality: "WEB-DL 4K",
+    Genres: ["Action", "Crime", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "7.2/10",
+    Release_Date: "2023-10-19",
+  },
+  {
+    MovieTitle: "Jailer",
+    Director: "Nelson Dilipkumar",
+    Starring: ["Rajinikanth", "Vinayakan", "Ramya Krishnan", "Vasanth Ravi"],
+    Quality: "WEB-DL 4K",
+    Genres: ["Action", "Comedy", "Crime"],
+    Language: "Tamil",
+    Movie_Rating: "7.1/10",
+    Release_Date: "2023-08-10",
+  },
+  {
+    MovieTitle: "Vikram",
+    Director: "Lokesh Kanagaraj",
+    Starring: ["Kamal Haasan", "Vijay Sethupathi", "Fahadh Faasil", "Narain"],
+    Quality: "BluRay 4K",
+    Genres: ["Action", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "8.3/10",
+    Release_Date: "2022-06-03",
+  },
+  {
+    MovieTitle: "Master",
+    Director: "Lokesh Kanagaraj",
+    Starring: [
+      "Vijay",
+      "Vijay Sethupathi",
+      "Malavika Mohanan",
+      "Andrea Jeremiah",
+    ],
+    Quality: "BluRay 1080p",
+    Genres: ["Action", "Drama", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "7.3/10",
+    Release_Date: "2021-01-13",
+  },
+  {
+    MovieTitle: "Ponniyin Selvan: I",
+    Director: "Mani Ratnam",
+    Starring: ["Vikram", "Karthi", "Aishwarya Rai Bachchan", "Jayam Ravi"],
+    Quality: "BluRay 4K",
+    Genres: ["Action", "Drama", "History"],
+    Language: "Tamil",
+    Movie_Rating: "7.6/10",
+    Release_Date: "2022-09-30",
+  },
+  {
+    MovieTitle: "Ponniyin Selvan: II",
+    Director: "Mani Ratnam",
+    Starring: ["Vikram", "Karthi", "Jayam Ravi", "Trisha Krishnan"],
+    Quality: "BluRay 4K",
+    Genres: ["Action", "Drama", "History"],
+    Language: "Tamil",
+    Movie_Rating: "7.7/10",
+    Release_Date: "2023-04-28",
+  },
+  {
+    MovieTitle: "Kaithi",
+    Director: "Lokesh Kanagaraj",
+    Starring: ["Karthi", "Narain", "George Maryan", "Arjun Das"],
+    Quality: "BluRay 1080p",
+    Genres: ["Action", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "8.4/10",
+    Release_Date: "2019-10-25",
+  },
+  {
+    MovieTitle: "Thunivu",
+    Director: "H. Vinoth",
+    Starring: ["Ajith Kumar", "Manju Warrier", "Samuthirakani", "John Kokken"],
+    Quality: "WEB-DL 1080p",
+    Genres: ["Action", "Crime", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "6.9/10",
+    Release_Date: "2023-01-11",
+  },
+  {
+    MovieTitle: "Soorarai Pottru",
+    Director: "Sudha Kongara",
+    Starring: ["Suriya", "Aparna Balamurali", "Paresh Rawal", "Urvashi"],
+    Quality: "WEB-DL 4K",
+    Genres: ["Drama", "Biography"],
+    Language: "Tamil",
+    Movie_Rating: "8.7/10",
+    Release_Date: "2020-11-12",
+  },
+  {
+    MovieTitle: "96",
+    Director: "C. Prem Kumar",
+    Starring: [
+      "Vijay Sethupathi",
+      "Trisha Krishnan",
+      "Devadarshini",
+      "Bagavathi Perumal",
+    ],
+    Quality: "BluRay 1080p",
+    Genres: ["Drama", "Romance"],
+    Language: "Tamil",
+    Movie_Rating: "8.5/10",
+    Release_Date: "2018-10-04",
+  },
+];
+```
+
+These are all real Tamil movies and are suitable as mock data for React, Node.js, or JSON projects.
+
+### Prompt 2
+
+> import express from "express";
+> import tamilMovies from "./movie_details.js";
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+let nextId = 11;
+
+app.get("/movies", (req, res) => {
+res.status(200).json(tamilMovies);
+});
+
+app.get("/movies/:id", (req, res) => {
+const movieId = parseInt(req.params.id);
+const movie = tamilMovies.find((movie) => movie.id === movieId);
+
+if (!movie) {
+return res
+.status(404)
+.json({ message: `Movie with ID ${movieId} not found.` });
+}
+
+res.status(200).json(movie);
+});
+
+app.post("/AddMovie", (req, res) => {
+const {
+MovieTitle,
+Director,
+Starring,
+Quality,
+Genres,
+Language,
+Movie_Rating,
+Release_Date,
+} = req.body;
+
+// Simple validation to ensure required fields are present
+if (!MovieTitle || !Director) {
+return res
+.status(400)
+.json({ message: "Title and Director are required fields." });
+}
+
+const newMovie = {
+id: nextId++,
+MovieTitle,
+Director,
+Starring,
+Quality,
+Genres,
+Language,
+Movie_Rating,
+Release_Date,
+};
+
+tamilMovies.push(newMovie);
+res
+.status(201)
+.json({ message: "Movie added successfully!", data: newMovie });
+});
+
+app.put("/movies/:id", (req, res) => {
+const movieId = parseInt(req.params.id);
+
+const movieIndex = tamilMovies.findIndex((movie) => movie.id === movieId);
+
+if (movieIndex === -1) {
+return res.status(404).json({
+message: `Movie with ID ${movieId} not found.`,
+});
+}
+
+const {
+MovieTitle,
+Director,
+Starring,
+Quality,
+Genres,
+Language,
+Movie_Rating,
+Release_Date,
+} = req.body;
+
+tamilMovies[movieIndex] = {
+id: movieId,
+MovieTitle,
+Director,
+Starring,
+Quality,
+Genres,
+Language,
+Movie_Rating,
+Release_Date,
+};
+
+res.status(200).json({
+message: "Movie updated successfully!",
+data: tamilMovies[movieIndex],
+});
+});
+
+app.delete("/movies/:id", (req, res) => {
+const movieId = parseInt(req.params.id);
+const movieIndex = tamilMovies.findIndex((movie) => movie.id === movieId);
+// console.log(movieIndex);
+
+if (movieIndex === -1) {
+return res
+.status(404)
+.json({ message: `Movie with ID ${movieId} not found.` });
+}
+
+// Remove the object from the array
+const deletedMovie = tamilMovies.splice(movieIndex, 1);
+
+res
+.status(200)
+.json({ message: "Movie deleted successfully!", data: deletedMovie[0] });
+});
+
+app.listen(3000, () => {
+console.log(`the server run url:http://localhost:3000`);
+console.log("Server is running");
+});
+
+this code is work if the use post method the data will not create in the movie_details.js file fix it.
+
+### Response
+
+Your code is **working correctly**. The behavior you're seeing is expected.
+
+### Why the new movie is not saved in `movie_details.js`
+
+When you do:
+
+```javascript
+tamilMovies.push(newMovie);
+```
+
+you are only adding the movie to the **array in memory (RAM)**.
+
+`movie_details.js` is a **source code file**. Node.js does **not** automatically edit JavaScript files when you change an imported array.
+
+For example:
+
+```javascript
+// movie_details.js
+const tamilMovies = [
+  {
+    id: 1,
+    MovieTitle: "Leo",
+  },
+];
+
+export default tamilMovies;
+```
+
+When the server starts:
+
+```
+movie_details.js
+        ↓
+Node imports it
+        ↓
+tamilMovies (stored in RAM)
+```
+
+When you call:
+
+```javascript
+tamilMovies.push(newMovie);
+```
+
+the array in RAM becomes:
+
+```javascript
+[
+  {
+    id: 1,
+    MovieTitle: "Leo",
+  },
+  {
+    id: 11,
+    MovieTitle: "GOAT",
+  },
+];
+```
+
+But **`movie_details.js` on disk is never modified**.
+
+If you stop the server and start it again, Node imports the original file again, so the new movie disappears.
+
+---
+
+# Can it be fixed?
+
+### Yes, but not the way you're thinking.
+
+There are three options.
+
+## Option 1 (Recommended): Use a database
+
+Store movies in MySQL, MongoDB, PostgreSQL, SQLite, etc.
+
+This is how real applications work.
+
+---
+
+## Option 2 (Recommended for beginners): Use a JSON file
+
+Instead of:
+
+```
+movie_details.js
+```
+
+create
+
+```
+movies.json
+```
+
+Then after `push()` write the updated array back to the file using the `fs` module.
+
+---
+
+## Option 3 (Not Recommended): Rewrite `movie_details.js`
+
+You **can** rewrite the JavaScript file yourself.
+
+Example:
+
+```javascript
+import fs from "fs";
+
+tamilMovies.push(newMovie);
+
+const fileContent = `const tamilMovies = ${JSON.stringify(
+  tamilMovies,
+  null,
+  2,
+)};
+
+export default tamilMovies;
+`;
+
+fs.writeFileSync("./movie_details.js", fileContent);
+```
+
+This will actually change `movie_details.js` to something like:
+
+```javascript
+const tamilMovies = [
+  {
+    id: 1,
+    MovieTitle: "Leo",
+  },
+  {
+    id: 11,
+    MovieTitle: "GOAT",
+  },
+];
+
+export default tamilMovies;
+```
+
+It works, but **editing your own source code at runtime is not considered good practice**.
+
+---
+
+## What should you do?
+
+If you're learning Express CRUD and just want data to persist without a database, I recommend:
+
+- Keep your Express routes as they are.
+- Replace `movie_details.js` with a `movies.json` file.
+- Use Node's `fs` module to read and write the JSON file.
+
+This is simple, beginner-friendly, and closer to how persistent storage works.
+
+If your goal is specifically **"POST should automatically update `movie_details.js`"**, I can show you how to do that using the `fs` module, but I would only recommend it as a learning exercise, not for real projects.
