@@ -1,128 +1,170 @@
 import express from "express";
-import fs from "fs";
-import tamilMovies from "./movie_details.js";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import Movie from "./movie.model.js";
+
+dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 
-let nextId = 11;
+const PORT = 3000;
 
-app.get("/movies", (req, res) => {
-  res.status(200).json(tamilMovies);
-});
+async function connectDB() {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error("MONGODB_URI not found inside .env");
+    }
 
-app.get("/movies/:id", (req, res) => {
-  const movieId = parseInt(req.params.id);
-  const movie = tamilMovies.find((movie) => movie.id === movieId);
+    await mongoose.connect(process.env.MONGODB_URI);
 
-  if (!movie) {
-    return res
-      .status(404)
-      .json({ message: `Movie with ID ${movieId} not found.` });
+    console.log("✅ MongoDB Connected");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error");
+    console.error(error.message);
+    process.exit(1);
   }
+}
 
-  res.status(200).json(movie);
-});
+connectDB();
 
-app.post("/AddMovie", (req, res) => {
-  const {
-    MovieTitle,
-    Director,
-    Starring,
-    Quality,
-    Genres,
-    Language,
-    Movie_Rating,
-    Release_Date,
-  } = req.body;
+// GET ALL MOVIES
 
-  // Simple validation to ensure required fields are present
-  if (!MovieTitle || !Director) {
-    return res
-      .status(400)
-      .json({ message: "Title and Director are required fields." });
-  }
+app.get("/movies", async (req, res) => {
+  try {
+    const movies = await Movie.find();
 
-  const newMovie = {
-    id: nextId++,
-    MovieTitle,
-    Director,
-    Starring,
-    Quality,
-    Genres,
-    Language,
-    Movie_Rating,
-    Release_Date,
-  };
-
-  tamilMovies.push(newMovie);
-
-  res
-    .status(201)
-    .json({ message: "Movie added successfully!", data: newMovie });
-});
-
-app.put("/movies/:id", (req, res) => {
-  const movieId = parseInt(req.params.id);
-
-  const movieIndex = tamilMovies.findIndex((movie) => movie.id === movieId);
-
-  if (movieIndex === -1) {
-    return res.status(404).json({
-      message: `Movie with ID ${movieId} not found.`,
+    res.status(200).json({
+      success: true,
+      count: movies.length,
+      data: movies,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
-
-  const {
-    MovieTitle,
-    Director,
-    Starring,
-    Quality,
-    Genres,
-    Language,
-    Movie_Rating,
-    Release_Date,
-  } = req.body;
-
-  tamilMovies[movieIndex] = {
-    id: movieId,
-    MovieTitle,
-    Director,
-    Starring,
-    Quality,
-    Genres,
-    Language,
-    Movie_Rating,
-    Release_Date,
-  };
-
-  res.status(200).json({
-    message: "Movie updated successfully!",
-    data: tamilMovies[movieIndex],
-  });
 });
 
-app.delete("/movies/:id", (req, res) => {
-  const movieId = parseInt(req.params.id);
-  const movieIndex = tamilMovies.findIndex((movie) => movie.id === movieId);
-  // console.log(movieIndex);
+// GET MOVIE BY ID
 
-  if (movieIndex === -1) {
-    return res
-      .status(404)
-      .json({ message: `Movie with ID ${movieId} not found.` });
+app.get("/movies/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Movie ID",
+      });
+    }
+
+    const movie = await Movie.findById(req.params.id);
+
+    if (!movie) {
+      return res.status(404).json({
+        success: false,
+        message: "Movie not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: movie,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-
-  // Remove the object from the array
-  const deletedMovie = tamilMovies.splice(movieIndex, 1);
-
-  res
-    .status(200)
-    .json({ message: "Movie deleted successfully!", data: deletedMovie[0] });
 });
 
-app.listen(3000, () => {
-  console.log(`the server run url:http://localhost:3000`);
-  console.log("Server is running");
+// CREATE MOVIE
+
+app.post("/movies", async (req, res) => {
+  try {
+    const movie = await Movie.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: movie,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// UPDATE MOVIE
+
+app.put("/movies/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Movie ID",
+      });
+    }
+
+    const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!movie) {
+      return res.status(404).json({
+        success: false,
+        message: "Movie not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: movie,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// DELETE MOVIE
+
+app.delete("/movies/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Movie ID",
+      });
+    }
+
+    const movie = await Movie.findByIdAndDelete(req.params.id);
+
+    if (!movie) {
+      return res.status(404).json({
+        success: false,
+        message: "Movie not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Movie deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
