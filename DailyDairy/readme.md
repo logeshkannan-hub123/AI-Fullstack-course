@@ -63,3 +63,7 @@ Today i will learn about Node.js fundamentals. Node runtime, npm & package.json,
 ## Day 12 (14/07/26)
 
 Today learned Express.js fundamentals: project setup, routing, and middleware, and used them to build a CRUD API. Created sample movie data as a JavaScript array in `movie_details.js`, exported it, and imported it into `server.js`, then built the full set of API endpoints (`GET`, `POST`, `PUT`, `DELETE`) to fetch, add, update, and delete movies.
+
+## Day 13 (15/07/26)
+
+Today learned MongoDB Atlas, Mongoose schemas, validation, and real persistence. Used MongoDB to store the movie data, then created, updated, and deleted records through the `GET`, `POST`, `PUT`, and `DELETE` API methods, and checked schema validation on the data.

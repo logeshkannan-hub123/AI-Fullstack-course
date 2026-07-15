@@ -179,3 +179,18 @@ Context: `movie_details.js` (10 hardcoded Tamil movie objects) was generated as 
   3. **Not recommended:** rewrite `movie_details.js` itself at runtime via `fs.writeFileSync(..., JSON.stringify(tamilMovies))` — technically works, but editing your own source file at runtime is bad practice.
 - No code changed this session; routes remain as originally written pending a decision on which persistence approach to adopt.
 
+## Day 13 — (15/07/26) — Mongoose schema design + MongoDB Atlas connection error
+
+**Mongoose schema for the `tamilMovies` sample data**
+
+- Data-quality issues found in the sample array itself (schema-design smells, not code bugs): `Genres` is a bare string (`"Drama"`) on one movie instead of an array like the rest; `Release_Date` mixes formats (`"YYYY-MM-DD"` vs `"5 August 2022"`); `Movie_Rating` is stored as a string (`"7.2/10"`) instead of a number, which blocks numeric sort/range queries.
+- Recommended fix: normalize `Movie_Rating` to a `Number` (0–10) and `Release_Date` to a `Date`, and keep `Genres` consistently as a `[String]` array — required for `Movie.find().sort({ Movie_Rating: -1 })` and date-range queries (`$gte`) to work correctly.
+- Provided a fallback "keep the data as-is" schema (`Genres` as `Schema.Types.Mixed`, `Movie_Rating`/`Release_Date` left as raw `String`) for cases where the source data can't be cleaned up first — explicitly flagged as the less-recommended option.
+- Discuss-only: no schema file was actually created or edited in this session, just proposed (`movie.model.js`).
+
+**MongoDB Atlas connection failure — `querySrv ECONNREFUSED _mongodb._tcp.cluster0...`**
+
+- Diagnosed as a DNS/connection-string/network issue, not a Mongoose code bug — `querySrv` failing means Node couldn't even resolve the Atlas SRV DNS record before a connection was attempted.
+- Still open — root cause not yet identified. Walked through the likely causes in order: a malformed/missing `MONGODB_URI` in `.env` (missing `mongodb+srv://`, stray spaces, missing db name, wrong credentials); `.env` not actually being loaded (`dotenv.config()` not called before `process.env` is read, or `.env` in the wrong directory); a stale/regenerated Atlas connection string; Atlas **Network Access** not whitelisting the current IP (or `0.0.0.0/0`); a **paused cluster** (common on the free tier); and local DNS/network failures (to be checked via `nslookup`/`ping`).
+- Still open: requested the user's redacted `.env`, `mongoose.connect(...)` code, `node -v` output, and OS — session ended before the exact cause was confirmed or a fix applied.
+

@@ -4152,3 +4152,576 @@ If you're learning Express CRUD and just want data to persist without a database
 This is simple, beginner-friendly, and closer to how persistent storage works.
 
 If your goal is specifically **"POST should automatically update `movie_details.js`"**, I can show you how to do that using the `fs` module, but I would only recommend it as a learning exercise, not for real projects.
+
+## Day 13 (15/07/26)
+
+### Prompt1
+
+> const tamilMovies = [
+> {
+
+    id: 1,
+    MovieTitle: "Leo",
+    Director: "Lokesh Kanagaraj",
+    Starring: ["Vijay", "Sanjay Dutt", "Trisha Krishnan", "Arjun Sarja"],
+    Quality: "WEB-DL 4K",
+    Genres: ["Action", "Crime", "Thriller"],
+    Language: "Tamil",
+    Movie_Rating: "7.2/10",
+    Release_Date: "2023-10-19",
+
+},
+{
+id: 2,
+MovieTitle: "Jailer",
+Director: "Nelson Dilipkumar",
+Starring: ["Rajinikanth", "Vinayakan", "Ramya Krishnan", "Vasanth Ravi"],
+Quality: "WEB-DL 4K",
+Genres: ["Action", "Comedy", "Crime"],
+Language: "Tamil",
+Movie_Rating: "7.1/10",
+Release_Date: "2023-08-10",
+},
+{
+id: 3,
+MovieTitle: "Vikram",
+Director: "Lokesh Kanagaraj",
+Starring: ["Kamal Haasan", "Vijay Sethupathi", "Fahadh Faasil", "Narain"],
+Quality: "BluRay 4K",
+Genres: ["Action", "Thriller"],
+Language: "Tamil",
+Movie_Rating: "8.3/10",
+Release_Date: "2022-06-03",
+},
+{
+id: 4,
+MovieTitle: "Master",
+Director: "Lokesh Kanagaraj",
+Starring: [
+"Vijay",
+"Vijay Sethupathi",
+"Malavika Mohanan",
+"Andrea Jeremiah",
+],
+Quality: "BluRay 1080p",
+Genres: ["Action", "Drama", "Thriller"],
+Language: "Tamil",
+Movie_Rating: "7.3/10",
+Release_Date: "2021-01-13",
+},
+{
+id: 5,
+MovieTitle: "Ponniyin Selvan: I",
+Director: "Mani Ratnam",
+Starring: ["Vikram", "Karthi", "Aishwarya Rai Bachchan", "Jayam Ravi"],
+Quality: "BluRay 4K",
+Genres: ["Action", "Drama", "History"],
+Language: "Tamil",
+Movie_Rating: "7.6/10",
+Release_Date: "2022-09-30",
+},
+{
+id: 6,
+MovieTitle: "Ponniyin Selvan: II",
+Director: "Mani Ratnam",
+Starring: ["Vikram", "Karthi", "Jayam Ravi", "Trisha Krishnan"],
+Quality: "BluRay 4K",
+Genres: ["Action", "Drama", "History"],
+Language: "Tamil",
+Movie_Rating: "7.7/10",
+Release_Date: "2023-04-28",
+},
+{
+id: 7,
+MovieTitle: "Kaithi",
+Director: "Lokesh Kanagaraj",
+Starring: ["Karthi", "Narain", "George Maryan", "Arjun Das"],
+Quality: "BluRay 1080p",
+Genres: ["Action", "Thriller"],
+Language: "Tamil",
+Movie_Rating: "8.4/10",
+Release_Date: "2019-10-25",
+},
+{
+id: 8,
+MovieTitle: "Thunivu",
+Director: "H. Vinoth",
+Starring: ["Ajith Kumar", "Manju Warrier", "Samuthirakani", "John Kokken"],
+Quality: "WEB-DL 1080p",
+Genres: ["Action", "Crime", "Thriller"],
+Language: "Tamil",
+Movie_Rating: "6.9/10",
+Release_Date: "2023-01-11",
+},
+{
+id: 10,
+MovieTitle: "96",
+Director: "C. Prem Kumar",
+Starring: [
+"Vijay Sethupathi",
+"Trisha Krishnan",
+"Devadarshini",
+"Bagavathi Perumal",
+],
+Quality: "BluRay 1080p",
+Genres: ["Drama", "Romance"],
+Language: "Tamil",
+Movie_Rating: "8.5/10",
+Release_Date: "2018-10-04",
+},
+{
+id: 11,
+MovieTitle: "Sita Ramam",
+Director: "Sita Ramam",
+Starring: ["Dulquer Salmaan", "Mrunal Thakur", "Rashmika Mandanna"],
+Quality: "Original HD",
+Genres: "Drama",
+Language: "Tamil",
+Movie_Rating: "8.0/10",
+Release_Date: "5 August 2022",
+},
+];
+
+export default tamilMovies;
+
+i use mongodb adtas and this is my sample data give the schema for the data for mongoose.
+
+### Response
+
+Based on your sample data, here is a **professional Mongoose schema**. I've also fixed some inconsistencies in your sample data.
+
+### Issues in your sample data
+
+1. `Genres` should always be an **array**, but `Sita Ramam` has `"Drama"` instead of `["Drama"]`.
+2. `Release_Date` should be stored as a **Date**, but one movie uses `"5 August 2022"` while others use `"YYYY-MM-DD"`.
+3. `Movie_Rating` should ideally be a **Number** instead of a string like `"7.2/10"`.
+
+A better format would be:
+
+```js
+Movie_Rating: 7.2,
+Release_Date: "2023-10-19",
+Genres: ["Drama"]
+```
+
+---
+
+## movie.model.js
+
+```js
+import mongoose from "mongoose";
+
+const movieSchema = new mongoose.Schema(
+  {
+    MovieTitle: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+
+    Director: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    Starring: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
+
+    Quality: {
+      type: String,
+      required: true,
+      trim: true,
+      enum: [
+        "WEB-DL 4K",
+        "WEB-DL 1080p",
+        "BluRay 4K",
+        "BluRay 1080p",
+        "Original HD",
+      ],
+    },
+
+    Genres: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
+
+    Language: {
+      type: String,
+      required: true,
+      default: "Tamil",
+      trim: true,
+    },
+
+    Movie_Rating: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 10,
+    },
+
+    Release_Date: {
+      type: Date,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+const Movie = mongoose.model("Movie", movieSchema);
+
+export default Movie;
+```
+
+---
+
+## If you don't want to change your sample data
+
+If you want to keep the data exactly as it is, use this schema:
+
+```js
+import mongoose from "mongoose";
+
+const movieSchema = new mongoose.Schema(
+  {
+    MovieTitle: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    Director: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    Starring: {
+      type: [String],
+      required: true,
+    },
+
+    Quality: {
+      type: String,
+      required: true,
+    },
+
+    Genres: {
+      type: mongoose.Schema.Types.Mixed, // accepts String or Array
+      required: true,
+    },
+
+    Language: {
+      type: String,
+      required: true,
+    },
+
+    Movie_Rating: {
+      type: String, // "7.2/10"
+      required: true,
+    },
+
+    Release_Date: {
+      type: String, // "2023-10-19" or "5 August 2022"
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+export default mongoose.model("Movie", movieSchema);
+```
+
+---
+
+## Recommended MongoDB document
+
+I recommend storing your data like this because it makes filtering, sorting, and querying much easier.
+
+```js
+{
+  MovieTitle: "Leo",
+  Director: "Lokesh Kanagaraj",
+  Starring: [
+    "Vijay",
+    "Sanjay Dutt",
+    "Trisha Krishnan",
+    "Arjun Sarja"
+  ],
+  Quality: "WEB-DL 4K",
+  Genres: ["Action", "Crime", "Thriller"],
+  Language: "Tamil",
+  Movie_Rating: 7.2,
+  Release_Date: new Date("2023-10-19")
+}
+```
+
+### Benefits of this format
+
+- Sort by rating:
+
+  ```js
+  Movie.find().sort({ Movie_Rating: -1 });
+  ```
+
+- Find movies released after 2022:
+
+  ```js
+  Movie.find({
+    Release_Date: { $gte: new Date("2022-01-01") },
+  });
+  ```
+
+- Find Action movies:
+
+  ```js
+  Movie.find({
+    Genres: "Action",
+  });
+  ```
+
+- Find movies with rating greater than 8:
+
+  ```js
+  Movie.find({
+    Movie_Rating: { $gte: 8 },
+  });
+  ```
+
+This normalized schema is the one commonly used in production applications because it supports efficient searching, sorting, and indexing.
+
+### Prompt 2
+
+> Connection failed: Error: querySrv ECONNREFUSED \_mongodb.\_tcp.cluster0.zz3kyam.mongodb.net
+
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:294:17) {
+
+errno: undefined,
+code: 'ECONNREFUSED',
+syscall: 'querySrv',
+hostname: '\_mongodb.\_tcp.cluster0.zz3kyam.mongodb.net'
+}
+
+### Response
+
+The error
+
+```text
+Connection failed: Error: querySrv ECONNREFUSED
+code: 'ECONNREFUSED'
+hostname: '_mongodb._tcp.cluster0.zz3kyam.mongodb.net'
+```
+
+means **Node.js couldn't resolve the MongoDB Atlas SRV record**. This is usually a connection string, DNS, or network issue—not a problem with your Mongoose code.
+
+## Step 1: Check your `.env` file
+
+Make sure it looks like this:
+
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster0.zz3kyam.mongodb.net/MovieDB?retryWrites=true&w=majority&appName=Cluster0
+```
+
+Common mistakes:
+
+- ❌ Missing `mongodb+srv://`
+- ❌ Extra spaces
+- ❌ Missing database name
+- ❌ Wrong username or password
+
+---
+
+## Step 2: Verify you're loading the environment variables
+
+After `dotenv.config();`, add:
+
+```js
+console.log(process.env.MONGODB_URI);
+```
+
+If it prints:
+
+```text
+undefined
+```
+
+then your `.env` file isn't being loaded.
+
+Ensure:
+
+```
+project/
+│
+├── .env
+├── server.js
+├── package.json
+```
+
+and that you call:
+
+```js
+import dotenv from "dotenv";
+
+dotenv.config();
+```
+
+before using `process.env.MONGODB_URI`.
+
+---
+
+## Step 3: Check the Atlas connection string
+
+Go to:
+
+1. MongoDB Atlas
+2. **Database → Connect**
+3. **Drivers**
+4. Copy the connection string again.
+
+It should look similar to:
+
+```text
+mongodb+srv://<username>:<password>@cluster0.zz3kyam.mongodb.net/?retryWrites=true&w=majority
+```
+
+Replace:
+
+- `<username>`
+- `<password>`
+
+with your database user credentials.
+
+---
+
+## Step 4: Check Atlas Network Access
+
+In Atlas:
+
+```
+Security
+   ↓
+Network Access
+```
+
+Make sure you have either:
+
+```
+0.0.0.0/0
+```
+
+or your current IP address added.
+
+If not, add it and wait 1–2 minutes.
+
+---
+
+## Step 5: Check your cluster
+
+Verify that your cluster status is:
+
+```
+Available
+```
+
+If it's paused (common on free tiers), resume it and wait until it becomes available.
+
+---
+
+## Step 6: Test your internet/DNS
+
+Since the error is:
+
+```
+querySrv ECONNREFUSED
+```
+
+try in your terminal:
+
+```bash
+nslookup cluster0.zz3kyam.mongodb.net
+```
+
+or
+
+```bash
+ping google.com
+```
+
+If DNS isn't working, restart your network or try a different internet connection.
+
+---
+
+## Step 7: Check your Node.js version
+
+Run:
+
+```bash
+node -v
+```
+
+A current LTS version (such as Node 20 or 22) is recommended.
+
+---
+
+## Step 8: Use the correct connection code
+
+```js
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+
+    console.log("MongoDB Connected");
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+connectDB();
+```
+
+---
+
+## I need these details to pinpoint the issue
+
+Please share:
+
+1. Your `.env` file (hide the password), for example:
+
+   ```env
+   MONGODB_URI=mongodb+srv://logesh:********@cluster0.zz3kyam.mongodb.net/MovieDB?retryWrites=true&w=majority
+   ```
+
+2. Your `mongoose.connect(...)` code.
+
+3. The output of:
+
+   ```bash
+   node -v
+   ```
+
+4. Whether you're using:
+   - Windows
+   - macOS
+   - Linux
+
+With those details, I can identify the exact cause of the `ECONNREFUSED` error.
