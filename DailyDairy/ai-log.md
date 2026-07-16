@@ -4725,3 +4725,339 @@ Please share:
    - Linux
 
 With those details, I can identify the exact cause of the `ECONNREFUSED` error.
+
+## Day 14 (16/7/26)
+
+### Prompt 1
+
+> give the sample 10 data for the recipes for mongodb and give the schema for the recipes data
+
+### Response
+
+Below is a **production-friendly Mongoose schema** for a Recipe collection along with **10 sample recipe documents** that you can insert into MongoDB Atlas.
+
+---
+
+# recipe.model.js
+
+```js
+import mongoose from "mongoose";
+
+const recipeSchema = new mongoose.Schema(
+  {
+    RecipeName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    Category: {
+      type: String,
+      required: true,
+      enum: ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert", "Beverage"],
+    },
+
+    Cuisine: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    Ingredients: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
+    Instructions: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
+    PreparationTime: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    CookingTime: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    Servings: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    Difficulty: {
+      type: String,
+      enum: ["Easy", "Medium", "Hard"],
+      required: true,
+    },
+
+    Calories: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    Vegetarian: {
+      type: Boolean,
+      default: false,
+    },
+
+    Rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0,
+    },
+
+    Image: {
+      type: String,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+export default mongoose.model("Recipe", recipeSchema);
+```
+
+---
+
+# Sample Data (10 Recipes)
+
+```js
+const moreRecipes = [
+  {
+    RecipeName: "Idli Sambar",
+    Category: "Breakfast",
+    Cuisine: "South Indian",
+    Ingredients: [
+      "Idli Batter",
+      "Toor Dal",
+      "Tamarind",
+      "Sambar Powder",
+      "Vegetables",
+    ],
+    Instructions: [
+      "Steam the idlis.",
+      "Cook the dal.",
+      "Prepare the sambar.",
+      "Serve hot with chutney.",
+    ],
+    PreparationTime: 20,
+    CookingTime: 30,
+    Servings: 4,
+    Difficulty: "Easy",
+    Calories: 280,
+    Vegetarian: true,
+    Rating: 4.8,
+    Image: "https://example.com/idli-sambar.jpg",
+  },
+  {
+    RecipeName: "Egg Fried Rice",
+    Category: "Lunch",
+    Cuisine: "Chinese",
+    Ingredients: ["Cooked Rice", "Eggs", "Carrot", "Beans", "Soy Sauce"],
+    Instructions: [
+      "Scramble eggs.",
+      "Saute vegetables.",
+      "Add rice.",
+      "Mix soy sauce and serve.",
+    ],
+    PreparationTime: 15,
+    CookingTime: 20,
+    Servings: 3,
+    Difficulty: "Easy",
+    Calories: 420,
+    Vegetarian: false,
+    Rating: 4.6,
+    Image: "https://example.com/egg-fried-rice.jpg",
+  },
+  {
+    RecipeName: "Chicken 65",
+    Category: "Snack",
+    Cuisine: "South Indian",
+    Ingredients: [
+      "Chicken",
+      "Corn Flour",
+      "Chili Powder",
+      "Ginger Garlic Paste",
+      "Oil",
+    ],
+    Instructions: [
+      "Marinate chicken.",
+      "Deep fry until crispy.",
+      "Garnish with curry leaves.",
+    ],
+    PreparationTime: 30,
+    CookingTime: 20,
+    Servings: 4,
+    Difficulty: "Medium",
+    Calories: 520,
+    Vegetarian: false,
+    Rating: 4.9,
+    Image: "https://example.com/chicken65.jpg",
+  },
+  {
+    RecipeName: "Vegetable Noodles",
+    Category: "Dinner",
+    Cuisine: "Chinese",
+    Ingredients: ["Noodles", "Carrot", "Capsicum", "Cabbage", "Soy Sauce"],
+    Instructions: [
+      "Boil noodles.",
+      "Stir fry vegetables.",
+      "Add noodles and sauces.",
+      "Serve hot.",
+    ],
+    PreparationTime: 15,
+    CookingTime: 20,
+    Servings: 2,
+    Difficulty: "Easy",
+    Calories: 390,
+    Vegetarian: true,
+    Rating: 4.5,
+    Image: "https://example.com/noodles.jpg",
+  },
+  {
+    RecipeName: "Prawn Fry",
+    Category: "Dinner",
+    Cuisine: "South Indian",
+    Ingredients: ["Prawns", "Turmeric", "Chili Powder", "Pepper", "Oil"],
+    Instructions: [
+      "Marinate prawns.",
+      "Pan fry until cooked.",
+      "Serve with lemon.",
+    ],
+    PreparationTime: 20,
+    CookingTime: 15,
+    Servings: 3,
+    Difficulty: "Medium",
+    Calories: 340,
+    Vegetarian: false,
+    Rating: 4.7,
+    Image: "https://example.com/prawn-fry.jpg",
+  },
+  {
+    RecipeName: "Veg Pizza",
+    Category: "Dinner",
+    Cuisine: "Italian",
+    Ingredients: ["Pizza Base", "Cheese", "Tomato", "Capsicum", "Olives"],
+    Instructions: [
+      "Spread sauce.",
+      "Add toppings.",
+      "Bake for 15 minutes.",
+      "Serve hot.",
+    ],
+    PreparationTime: 20,
+    CookingTime: 15,
+    Servings: 4,
+    Difficulty: "Easy",
+    Calories: 560,
+    Vegetarian: true,
+    Rating: 4.8,
+    Image: "https://example.com/pizza.jpg",
+  },
+  {
+    RecipeName: "Falooda",
+    Category: "Dessert",
+    Cuisine: "Indian",
+    Ingredients: [
+      "Milk",
+      "Rose Syrup",
+      "Vermicelli",
+      "Basil Seeds",
+      "Ice Cream",
+    ],
+    Instructions: [
+      "Cook vermicelli.",
+      "Layer ingredients.",
+      "Top with ice cream.",
+      "Serve chilled.",
+    ],
+    PreparationTime: 15,
+    CookingTime: 10,
+    Servings: 2,
+    Difficulty: "Easy",
+    Calories: 450,
+    Vegetarian: true,
+    Rating: 4.7,
+    Image: "https://example.com/falooda.jpg",
+  },
+  {
+    RecipeName: "Tomato Soup",
+    Category: "Dinner",
+    Cuisine: "International",
+    Ingredients: ["Tomatoes", "Butter", "Garlic", "Pepper", "Cream"],
+    Instructions: [
+      "Boil tomatoes.",
+      "Blend smoothly.",
+      "Cook with butter.",
+      "Serve hot.",
+    ],
+    PreparationTime: 15,
+    CookingTime: 20,
+    Servings: 3,
+    Difficulty: "Easy",
+    Calories: 180,
+    Vegetarian: true,
+    Rating: 4.4,
+    Image: "https://example.com/tomato-soup.jpg",
+  },
+  {
+    RecipeName: "Grilled Chicken",
+    Category: "Dinner",
+    Cuisine: "American",
+    Ingredients: ["Chicken Breast", "Olive Oil", "Garlic", "Pepper", "Herbs"],
+    Instructions: [
+      "Marinate chicken.",
+      "Grill both sides.",
+      "Rest for 5 minutes.",
+      "Serve.",
+    ],
+    PreparationTime: 25,
+    CookingTime: 20,
+    Servings: 2,
+    Difficulty: "Medium",
+    Calories: 430,
+    Vegetarian: false,
+    Rating: 4.9,
+    Image: "https://example.com/grilled-chicken.jpg",
+  },
+  {
+    RecipeName: "Fruit Salad",
+    Category: "Dessert",
+    Cuisine: "International",
+    Ingredients: ["Apple", "Banana", "Orange", "Grapes", "Honey"],
+    Instructions: [
+      "Cut fruits.",
+      "Mix together.",
+      "Drizzle honey.",
+      "Serve chilled.",
+    ],
+    PreparationTime: 10,
+    CookingTime: 0,
+    Servings: 4,
+    Difficulty: "Easy",
+    Calories: 170,
+    Vegetarian: true,
+    Rating: 4.6,
+    Image: "https://example.com/fruit-salad.jpg",
+  },
+];
+
+export default moreRecipes;
+```
+
+This schema is suitable for building recipe APIs with CRUD operations, and the sample data works well for testing features such as filtering by category, cuisine, vegetarian/non-vegetarian, difficulty, rating, cooking time, and searching by recipe name.

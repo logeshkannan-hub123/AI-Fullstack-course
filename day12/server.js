@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Movie from "./movie.model.js";
+import Recipe from "./recipes.js";
 
 dotenv.config();
 
@@ -129,6 +130,7 @@ app.put("/movies/:id", async (req, res) => {
 
     res.json({
       success: true,
+      message: "movie updated successfully",
       data: movie,
     });
   } catch (error) {
@@ -162,6 +164,165 @@ app.delete("/movies/:id", async (req, res) => {
     res.json({
       success: true,
       message: "Movie deleted successfully",
+      data: movie,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// GET RECIPES
+
+app.get("/recipes", async (req, res) => {
+  try {
+    const recipes = await Recipe.find();
+
+    res.status(200).json({
+      success: true,
+      count: recipes.length,
+      data: recipes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// GET RECIPE BY ID
+
+app.get("/recipes/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Recipe ID",
+      });
+    }
+
+    const recipe = await Recipe.findById(req.params.id);
+
+    if (!recipe) {
+      return res.status(404).json({
+        success: false,
+        message: "Recipe not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: recipe,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// CREATE SINGLE RECIPE
+
+app.post("/recipes/single", async (req, res) => {
+  try {
+    const recipe = await Recipe.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Recipe added successfully",
+      data: recipe,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// CREATE MULTIPLE RECIPES
+
+app.post("/recipes/bulk", async (req, res) => {
+  try {
+    const recipes = await Recipe.insertMany(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Recipes added successfully",
+      data: recipes,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// UPDATE RECIPE
+
+app.put("/recipes/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Recipe ID",
+      });
+    }
+
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!recipe) {
+      return res.status(404).json({
+        success: false,
+        message: "Recipe not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Recipe updated successfully",
+      data: recipe,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// DELETE RECIPE
+
+app.delete("/recipes/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Recipe ID",
+      });
+    }
+
+    const recipe = await Recipe.findByIdAndDelete(req.params.id);
+
+    if (!recipe) {
+      return res.status(404).json({
+        success: false,
+        message: "Recipe not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Recipe deleted successfully",
+      data: recipe,
     });
   } catch (error) {
     res.status(500).json({
