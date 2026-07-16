@@ -11,6 +11,8 @@ app.use(express.json());
 
 const PORT = 3000;
 
+console.log(process.env.MONGODB_URI);
+
 async function connectDB() {
   try {
     if (!process.env.MONGODB_URI) {
@@ -88,7 +90,7 @@ app.get("/movies/:id", async (req, res) => {
 
 app.post("/movies", async (req, res) => {
   try {
-    const movie = await Movie.create(req.body);
+    const movie = await Movie.insertMany(req.body);
 
     res.status(201).json({
       success: true,
