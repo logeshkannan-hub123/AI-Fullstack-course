@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movies - FeastFusion</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>FeastFusion</h1>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="logout-btn">Logout</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="add-form">
+        <h2>Add Movie</h2>
+        <form id="add-movie-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="movie-title">Movie Title</label>
+              <input type="text" id="movie-title" required />
+            </div>
+            <div class="form-group">
+              <label for="movie-director">Director</label>
+              <input type="text" id="movie-director" required />
+            </div>
+            <div class="form-group">
+              <label for="movie-starring">Starring (comma separated)</label>
+              <input type="text" id="movie-starring" required />
+            </div>
+            <div class="form-group">
+              <label for="movie-quality">Quality</label>
+              <select id="movie-quality" required>
+                <option value="WEB-DL 4K">WEB-DL 4K</option>
+                <option value="WEB-DL 1080p">WEB-DL 1080p</option>
+                <option value="BluRay 4K">BluRay 4K</option>
+                <option value="BluRay 1080p">BluRay 1080p</option>
+                <option value="Original HD">Original HD</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="movie-genres">Genres (comma separated)</label>
+              <input type="text" id="movie-genres" required />
+            </div>
+            <div class="form-group">
+              <label for="movie-language">Language</label>
+              <input type="text" id="movie-language" value="Tamil" required />
+            </div>
+            <div class="form-group">
+              <label for="movie-rating">Rating (0-10)</label>
+              <input
+                type="number"
+                id="movie-rating"
+                min="0"
+                max="10"
+                step="0.1"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="movie-release-date">Release Date</label>
+              <input type="date" id="movie-release-date" required />
+            </div>
+          </div>
+          <button type="submit" class="primary">Add Movie</button>
+          <p id="add-movie-message" class="error-message"></p>
+        </form>
+      </section>
+
+      <section>
+        <h2>Movie List</h2>
+        <div id="movie-list" class="item-grid"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 Logesh Kannan · Full Stack Developer</footer>
+
+    <script src="js/movies.js"></script>
+  </body>
+</html>

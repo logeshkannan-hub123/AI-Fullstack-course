@@ -194,3 +194,18 @@ Context: `movie_details.js` (10 hardcoded Tamil movie objects) was generated as 
 - Still open — root cause not yet identified. Walked through the likely causes in order: a malformed/missing `MONGODB_URI` in `.env` (missing `mongodb+srv://`, stray spaces, missing db name, wrong credentials); `.env` not actually being loaded (`dotenv.config()` not called before `process.env` is read, or `.env` in the wrong directory); a stale/regenerated Atlas connection string; Atlas **Network Access** not whitelisting the current IP (or `0.0.0.0/0`); a **paused cluster** (common on the free tier); and local DNS/network failures (to be checked via `nslookup`/`ping`).
 - Still open: requested the user's redacted `.env`, `mongoose.connect(...)` code, `node -v` output, and OS — session ended before the exact cause was confirmed or a fix applied.
 
+## Day 15 — (17/07/26) — Security review of signup/login (`server.js`, `auth.js`, `userModel.js`)
+
+Security audit of the auth routes and JWT middleware, followed by fixes applied to `server.js` in the same session.
+
+- Confirmed fine, no fix needed: passwords are hashed with `bcrypt.hash(password, 10)` before storage and checked with `bcrypt.compare` on login — no plaintext storage.
+- **Bug found: `PUT /movies/:id` and `PUT /recipes/:id` skip the ownership check.** Both routes required a valid JWT (`requireAuth`) but never verified `req.user.user_id` matches the record's `owner`, so any authenticated user could overwrite someone else's movie/recipe. The sibling `DELETE` routes did this check correctly (`String(movie.owner) !== req.user.user_id`) — `PUT` never got the same guard.
+  - **Fixed:** both `PUT` handlers now fetch the record first, return `403 "Not your movie"`/`"Not your recipe"` if `req.user.user_id` doesn't match `owner`, and only then run the update.
+- **Bug found: no type validation on `/login` or `/users` inputs.** `email`/`password`/`username` went straight into `User.findOne(...)` without confirming they're strings, opening a NoSQL operator-injection path (e.g. `{"email": {"$gt": ""}}` gets evaluated as a query operator instead of a literal).
+  - **Fixed:** both routes now reject the request with `400` if `email`/`password`(/`username`) aren't strings, before any query runs.
+- **Bug found: signup accepted arbitrarily weak passwords.** The schema's `minlength: 60` on `password` (`userModel.js:26`) constrains the bcrypt hash, not the raw input, so there was no real minimum length on what the user actually submits.
+  - **Fixed:** `/users` now rejects passwords under 8 characters with a `400` before hashing.
+- **Bug found: `/login` leaked account existence via status code.** Returned `404` for "no such user" vs `401` for "wrong password" — enabled email enumeration even though the JSON `message` text was identical in both branches.
+  - **Fixed:** both branches now return `401`, so the status code no longer distinguishes "unknown email" from "wrong password."
+- Still open: no rate limiting/lockout on `/login` or `/users` — brute force is unthrottled. Not fixed (would need adding a dependency like `express-rate-limit`).
+- Still open: every route's `catch` block returns raw `error.message` to the client, risking leakage of internal DB/driver details on 500s. Not addressed this session.

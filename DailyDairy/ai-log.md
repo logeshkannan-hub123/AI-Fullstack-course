@@ -5061,3 +5061,33 @@ export default moreRecipes;
 ```
 
 This schema is suitable for building recipe APIs with CRUD operations, and the sample data works well for testing features such as filtering by category, cuisine, vegetarian/non-vegetarian, difficulty, rating, cooking time, and searching by recipe name.
+
+## Day 15 (17/07/26)
+
+### Prompt 1
+>"Here's my signup and login code. Act as a security reviewer — specifically check for: plaintext password storage, missing input validation, and any route that's accessible without auth that shouldn't be."
+
+### Response
+
+Reviewed `server.js`, `auth.js`, and `userModel.js`. Passwords are stored correctly — `bcrypt.hash(password, 10)` before saving, `bcrypt.compare` on login — so no plaintext storage issue. The rest of the findings, most severe first:
+
+**Broken access control**
+
+- `PUT /movies/:id` and `PUT /recipes/:id` require a valid token (`requireAuth`) but never check that the token's user owns the record — any logged-in user can edit anyone else's movie or recipe. The `DELETE` routes right next to them do this correctly (`String(movie.owner) !== req.user.user_id`); `PUT` is just missing the equivalent check.
+
+**Missing input validation**
+
+- `/login` and `/users` never verify `email`/`password`/`username` are strings before passing them into `User.findOne(...)`. Sending an object like `{"$gt": ""}` as `email` gets evaluated as a MongoDB query operator instead of a literal value — a NoSQL operator-injection path.
+- Signup has no real password-strength rule. The schema's `minlength: 60` on `password` (`userModel.js:26`) constrains the **bcrypt hash**, not the raw input, so a 1-character password is accepted.
+
+**Auth/enumeration**
+
+- No route is missing auth that shouldn't have it — the public `GET` routes are intentionally open, and every mutating route goes through `requireAuth`.
+- `/login` returns `404` for "no such user" vs `401` for "wrong password" — different status codes let an attacker enumerate valid emails even though the JSON message text is identical in both cases.
+- No rate limiting on `/login` or `/users`, so brute-forcing passwords is unthrottled.
+
+**Minor**
+
+- Every route's `catch` block echoes raw `error.message` back to the client on 500s, which can leak internal DB/driver details.
+
+Not fixed yet — this was a review-only pass; next step would be adding the ownership check to both `PUT` routes and basic type validation on `/login` and `/users`.

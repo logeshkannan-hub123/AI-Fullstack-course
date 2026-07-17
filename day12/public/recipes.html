@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipes - FeastFusion</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>FeastFusion</h1>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="logout-btn">Logout</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="add-form">
+        <h2>Add Recipe</h2>
+        <form id="add-recipe-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="recipe-name">Recipe Name</label>
+              <input type="text" id="recipe-name" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-category">Category</label>
+              <select id="recipe-category" required>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Snack">Snack</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Beverage">Beverage</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="recipe-cuisine">Cuisine</label>
+              <input type="text" id="recipe-cuisine" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-ingredients"
+                >Ingredients (comma separated)</label
+              >
+              <input type="text" id="recipe-ingredients" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-instructions"
+                >Instructions (one step per line)</label
+              >
+              <textarea id="recipe-instructions" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="recipe-prep-time">Preparation Time (min)</label>
+              <input type="number" id="recipe-prep-time" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-cook-time">Cooking Time (min)</label>
+              <input type="number" id="recipe-cook-time" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-servings">Servings</label>
+              <input type="number" id="recipe-servings" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-difficulty">Difficulty</label>
+              <select id="recipe-difficulty" required>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="recipe-calories">Calories</label>
+              <input type="number" id="recipe-calories" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="recipe-rating">Rating (0-5)</label>
+              <input
+                type="number"
+                id="recipe-rating"
+                min="0"
+                max="5"
+                step="0.1"
+              />
+            </div>
+            <div class="form-group">
+              <label for="recipe-image">Image URL</label>
+              <input type="text" id="recipe-image" />
+            </div>
+            <div class="form-group checkbox">
+              <input type="checkbox" id="recipe-vegetarian" />
+              <label for="recipe-vegetarian">Vegetarian</label>
+            </div>
+          </div>
+          <button type="submit" class="primary">Add Recipe</button>
+          <p id="add-recipe-message" class="error-message"></p>
+        </form>
+      </section>
+
+      <section>
+        <h2>Recipe List</h2>
+        <div id="recipe-list" class="item-grid"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 Logesh Kannan · Full Stack Developer</footer>
+
+    <script src="js/recipes.js"></script>
+  </body>
+</html>

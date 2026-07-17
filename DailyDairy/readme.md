@@ -67,3 +67,11 @@ Today learned Express.js fundamentals: project setup, routing, and middleware, a
 ## Day 13 (15/07/26)
 
 Today learned MongoDB Atlas, Mongoose schemas, validation, and real persistence. Used MongoDB to store the movie data, then created, updated, and deleted records through the `GET`, `POST`, `PUT`, and `DELETE` API methods, and checked schema validation on the data.
+
+## Day 14 (17/07/26)
+
+Today learned bcrypt hashing, JWTs, auth middleware, and secrets, then used them to build signup and login routes with hashed passwords and token-based authentication in the Express CRUD API.
+
+## Day 15 (17/07/26)
+
+Today did a security review of the signup and login code, checking for plaintext password storage, missing input validation, and routes accessible without auth that shouldn't be. Found and fixed a few real issues: `PUT /movies/:id` and `PUT /recipes/:id` were missing ownership checks (any logged-in user could edit someone else's data), `/login` and `/users` accepted non-string input that could enable NoSQL injection, signup allowed very weak passwords, and `/login` leaked account existence through different HTTP status codes. Applied fixes for all of these directly in `server.js`.
