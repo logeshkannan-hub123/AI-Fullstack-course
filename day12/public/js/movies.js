@@ -47,12 +47,17 @@ function renderMovies(movies) {
 
 async function loadMovies() {
   try {
-    const response = await fetch("/movies");
+    const response = await fetch("/movies", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     const data = await response.json();
     renderMovies(data.data || []);
   } catch (error) {
-    listEl.innerHTML =
-      '<p class="empty-state">Failed to load movies.</p>';
+    listEl.innerHTML = '<p class="empty-state">Failed to load movies.</p>';
   }
 }
 

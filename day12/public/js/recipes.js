@@ -47,7 +47,13 @@ function renderRecipes(recipes) {
 
 async function loadRecipes() {
   try {
-    const response = await fetch("/recipes");
+    const response = await fetch("/recipes", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     const data = await response.json();
     renderRecipes(data.data || []);
   } catch (error) {
