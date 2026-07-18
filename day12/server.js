@@ -180,7 +180,7 @@ app.post("/login", async (req, res) => {
 
 // GET ALL MOVIES
 
-app.get("/movies", async (req, res) => {
+app.get("/movies", requireAuth,async (req, res) => {
   try {
     const movies = await Movie.find();
 
