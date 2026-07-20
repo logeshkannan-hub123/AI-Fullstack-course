@@ -230,7 +230,7 @@ app.put("/movies/:id", requireAuth, async (req, res) => {
     }
 
     // Check ownership
-    if (movie.userId !== req.user.user_id) {
+    if (String(movie.userId) !== req.user.user_id) {
       return res.status(403).json({
         success: false,
         message: "Not your movie",
@@ -280,7 +280,7 @@ app.delete("/movies/:id", requireAuth, async (req, res) => {
     }
 
     // Check ownership
-    if (movie.userId !== req.user.user_id) {
+    if (String(movie.userId) !== req.user.user_id) {
       return res.status(403).json({
         success: false,
         message: "Not your movie",
