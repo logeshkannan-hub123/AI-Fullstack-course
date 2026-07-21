@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 import Movie from "./movie.model.js";
 import User from "./userModel.js";
 import bcrypt from "bcrypt";
@@ -12,6 +13,18 @@ dotenv.config();
 
 const app = express();
 
+const LOCALHOST_ORIGIN = /http:\/\/localhost:5175/;
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || LOCALHOST_ORIGIN.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  }),
+);
 app.use(express.json());
 // app.use(express.static("public"));
 
