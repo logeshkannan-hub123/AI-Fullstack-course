@@ -1,0 +1,13 @@
+.add-movie-page {
+  max-width: 760px;
+}
+
+.add-movie-page h1 {
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.add-movie-page .movies-subtitle {
+  margin-bottom: 22px;
+}

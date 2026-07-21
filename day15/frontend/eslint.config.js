@@ -17,5 +17,10 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Fetch-on-mount with a loading flag is the standard pattern for a
+      // plain React app with no data-fetching library — allow it.
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
 ])
