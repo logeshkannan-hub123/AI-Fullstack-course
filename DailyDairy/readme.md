@@ -72,6 +72,8 @@ Today learned MongoDB Atlas, Mongoose schemas, validation, and real persistence.
 
 Today learned bcrypt hashing, JWTs, auth middleware, and secrets, then used them to build signup and login routes with hashed passwords and token-based authentication in the Express CRUD API.
 
-## Day 15 (17/07/26)
-
 Today did a security review of the signup and login code, checking for plaintext password storage, missing input validation, and routes accessible without auth that shouldn't be. Found and fixed a few real issues: `PUT /movies/:id` and `PUT /recipes/:id` were missing ownership checks (any logged-in user could edit someone else's data), `/login` and `/users` accepted non-string input that could enable NoSQL injection, signup allowed very weak passwords, and `/login` leaked account existence through different HTTP status codes. Applied fixes for all of these directly in `server.js`.
+
+## Day 15 (21/07/26)
+
+Today learned CORS, auth tokens, and integration debugging, then built the full-stack app connecting the React frontend to the Node/Express/MongoDB backend. Built out `day15/frontend` — login and signup pages, an `AuthContext`/`useAuth` hook, an axios instance (`api.js`) that attaches the JWT to every request and clears it on a 401, and a `ProtectedRoute` component guarding authenticated routes. Also set up CORS on the Express server so the Vite dev server (port 5173) could talk to the API, and fixed a port mismatch between the frontend's `VITE_API_URL` and the backend's hardcoded port.

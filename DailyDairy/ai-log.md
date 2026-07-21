@@ -4726,7 +4726,7 @@ Please share:
 
 With those details, I can identify the exact cause of the `ECONNREFUSED` error.
 
-## Day 14 (16/7/26)
+## Day 14 (17/7/26)
 
 ### Prompt 1
 
@@ -5062,9 +5062,7 @@ export default moreRecipes;
 
 This schema is suitable for building recipe APIs with CRUD operations, and the sample data works well for testing features such as filtering by category, cuisine, vegetarian/non-vegetarian, difficulty, rating, cooking time, and searching by recipe name.
 
-## Day 15 (17/07/26)
-
-### Prompt 1
+### Prompt 2
 >"Here's my signup and login code. Act as a security reviewer — specifically check for: plaintext password storage, missing input validation, and any route that's accessible without auth that shouldn't be."
 
 ### Response
@@ -5091,3 +5089,32 @@ Reviewed `server.js`, `auth.js`, and `userModel.js`. Passwords are stored correc
 - Every route's `catch` block echoes raw `error.message` back to the client on 500s, which can leak internal DB/driver details.
 
 Not fixed yet — this was a review-only pass; next step would be adding the ownership check to both `PUT` routes and basic type validation on `/login` and `/users`.
+
+## Day 15 (21/07/26)
+
+### Prompt 1
+
+> I have a React app on port 5173 and an Express API on port 5000 with JWT auth. Lay out the exact sequence of steps to connect them, including CORS and token handling.
+
+### Response 1
+
+Checked the actual `day15` project instead of answering generically — most of the connection was already built.
+
+**1. CORS (backend) — missing, would block requests**
+`server.js` had no `cors` middleware and `cors` wasn't in `package.json` dependencies. Since the frontend sends an `Authorization` header, the browser preflights every request and Express would reject it without CORS configured. Fix: `npm install cors`, then `app.use(cors({ origin: "http://localhost:5173", credentials: true }))` before the routes.
+
+**2. Port mismatch — needed a decision**
+The prompt said the API is on port 5000, but `server.js` hardcodes `PORT = 3000`, and `frontend/.env` already points `VITE_API_URL` at `http://localhost:3000`. Flagged this as the #1 cause of "network error" during dev and asked to pick one consistently rather than guessing.
+
+**3. Already done, verified by reading the code:**
+
+- `api.js` builds the axios instance from `VITE_API_URL`, so the frontend never hardcodes a host.
+- `POST /login` (`server.js`) verifies credentials with bcrypt and returns a JWT signed with `JWT_SECRET`; `authService.js` posts to `/login`; `Login.jsx` calls `login(data.token, data.user)` on success.
+- `api.js` request interceptor reads the token from `localStorage` and sets `Authorization: Bearer <token>` on every outgoing request.
+- `auth.js` (`requireAuth` middleware) verifies the JWT on protected routes and attaches `req.user`.
+- `api.js` response interceptor clears `localStorage` and fires an `auth:unauthorized` event on a 401; `ProtectedRoute.jsx` guards client-side routes.
+
+Net result: only the CORS setup and the port mismatch were real gaps — the login flow, token storage/attachment, route protection, and expiry handling were already correctly wired.
+
+---
+
