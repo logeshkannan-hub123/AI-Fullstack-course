@@ -194,7 +194,7 @@ Context: `movie_details.js` (10 hardcoded Tamil movie objects) was generated as 
 - Still open — root cause not yet identified. Walked through the likely causes in order: a malformed/missing `MONGODB_URI` in `.env` (missing `mongodb+srv://`, stray spaces, missing db name, wrong credentials); `.env` not actually being loaded (`dotenv.config()` not called before `process.env` is read, or `.env` in the wrong directory); a stale/regenerated Atlas connection string; Atlas **Network Access** not whitelisting the current IP (or `0.0.0.0/0`); a **paused cluster** (common on the free tier); and local DNS/network failures (to be checked via `nslookup`/`ping`).
 - Still open: requested the user's redacted `.env`, `mongoose.connect(...)` code, `node -v` output, and OS — session ended before the exact cause was confirmed or a fix applied.
 
-## Day 15 — (17/07/26) — Security review of signup/login (`server.js`, `auth.js`, `userModel.js`)
+## Day 14 — (17/07/26) — Security review of signup/login (`server.js`, `auth.js`, `userModel.js`)
 
 Security audit of the auth routes and JWT middleware, followed by fixes applied to `server.js` in the same session.
 
@@ -209,3 +209,13 @@ Security audit of the auth routes and JWT middleware, followed by fixes applied 
   - **Fixed:** both branches now return `401`, so the status code no longer distinguishes "unknown email" from "wrong password."
 - Still open: no rate limiting/lockout on `/login` or `/users` — brute force is unthrottled. Not fixed (would need adding a dependency like `express-rate-limit`).
 - Still open: every route's `catch` block returns raw `error.message` to the client, risking leakage of internal DB/driver details on 500s. Not addressed this session.
+
+## Day 15 — (21/07/26) — CORS blocking signup/login (`server.js`)
+
+Reported bug: signup and login both failed in the browser with a network error.
+
+- **Bug found: no CORS middleware at all.** `server.js` had no `cors` import/usage, so the browser blocked every cross-origin request from the Vite dev server (`5173`) to the API (`3000`); axios surfaced this as a generic "Network Error" with no response body. Confirmed by actually starting the backend — it booted and connected to MongoDB correctly, ruling out a DB/auth-logic cause.
+  - **Fixed:** installed `cors` (`npm install cors`) and added `app.use(cors({ origin: "http://localhost:5173" }))` before the routes.
+- **Bug found: hardcoded single-origin allowlist broke as soon as the dev port shifted.** After the first fix, the browser reported the preflight `Access-Control-Allow-Origin` header (`5173`) didn't match the actual page origin (`5175`) — Vite had auto-incremented past `5173` because another dev server instance was still holding that port.
+  - **Fixed:** replaced the static `origin: "http://localhost:5173"` with a dynamic `origin` callback matching `/^http:\/\/localhost:\d+$/`, accepting any local Vite dev port instead of one hardcoded value.
+- Still open: an extra Vite dev server instance appears to still be running somewhere, which is why the port shifted from `5173` to `5175` in the first place — worth closing stray terminals/processes so the frontend consistently lands on `5173`.
