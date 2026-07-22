@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: process.env.LOCAL_ORGIN }));
+app.use(cors({ origin: process.env.Allow_ORGIN }));
 app.use(express.json());
 // app.use(express.static("public"));
 
@@ -302,3 +302,5 @@ app.delete("/movies/:id", requireAuth, async (req, res) => {
     });
   }
 });
+
+export default app;
