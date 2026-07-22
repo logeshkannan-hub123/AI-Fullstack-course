@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 
-const LOCALHOST_ORIGIN = /http:\/\/localhost:5175/;
+const LOCALHOST_ORIGIN = /http:\/\/localhost:5173/;
 app.use(
   cors({
     origin(origin, callback) {
