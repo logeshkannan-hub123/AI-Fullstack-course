@@ -13,18 +13,7 @@ dotenv.config();
 
 const app = express();
 
-const LOCALHOST_ORIGIN = /http:\/\/localhost:5173/;
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || LOCALHOST_ORIGIN.test(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-  }),
-);
+app.use(cors({ origin: process.env.LOCAL_ORGIN }));
 app.use(express.json());
 // app.use(express.static("public"));
 
