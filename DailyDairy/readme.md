@@ -77,3 +77,11 @@ Today did a security review of the signup and login code, checking for plaintext
 ## Day 15 (21/07/26)
 
 Today learned CORS, auth tokens, and integration debugging, then built the full-stack app connecting the React frontend to the Node/Express/MongoDB backend. Built out `day15/frontend` — login and signup pages, an `AuthContext`/`useAuth` hook, an axios instance (`api.js`) that attaches the JWT to every request and clears it on a 401, and a `ProtectedRoute` component guarding authenticated routes. Also set up CORS on the Express server so the Vite dev server (port 5173) could talk to the API, and fixed a port mismatch between the frontend's `VITE_API_URL` and the backend's hardcoded port.
+
+## Day 16 (22/07/26)
+
+Today learned testing fundamentals: the testing pyramid (unit vs. integration vs. e2e), Jest basics (`describe`/`it`/`expect`, matchers like `toBe`/`toEqual`/`toContain`/`toThrow`), Supertest for hitting Express routes directly without a running server, and React Testing Library for rendering components and simulating user interaction.
+
+Built out `day15/backendend/test` — used Supertest + Jest against the real Express `app`, with `mongodb-memory-server` (`test-units/db-handler.js`) spinning up an isolated in-memory MongoDB per test run so nothing touches the real database. Wrote integration tests covering both the happy path and unhappy paths: `signin.test.js` checks `POST /signup` creates a user, and `login.test.js` seeds a user through the real signup endpoint (so the password is hashed the same way as production), then checks a successful login returns a token, a wrong password is rejected with 401, `GET /movies` returns data with a valid token, and the same route is rejected with 401 when no token is sent.
+
+Also added `day15/frontend/test/reactcomponent.test.jsx` — component tests for `ConfirmDialog` using React Testing Library and `@testing-library/user-event`: one test renders a custom message and checks it appears, one checks the default title shows when no props are passed, and one simulates a real click on the Confirm button and checks the `onConfirm` callback fires exactly once (using a `vi.fn()` mock).
