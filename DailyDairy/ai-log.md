@@ -5063,7 +5063,8 @@ export default moreRecipes;
 This schema is suitable for building recipe APIs with CRUD operations, and the sample data works well for testing features such as filtering by category, cuisine, vegetarian/non-vegetarian, difficulty, rating, cooking time, and searching by recipe name.
 
 ### Prompt 2
->"Here's my signup and login code. Act as a security reviewer — specifically check for: plaintext password storage, missing input validation, and any route that's accessible without auth that shouldn't be."
+
+> "Here's my signup and login code. Act as a security reviewer — specifically check for: plaintext password storage, missing input validation, and any route that's accessible without auth that shouldn't be."
 
 ### Response
 
@@ -5121,7 +5122,7 @@ Net result: only the CORS setup and the port mismatch were real gaps — the log
 ### Prompt 2
 
 > ccess to XMLHttpRequest at 'http://localhost:3000/login' from origin 'http://localhost:5175' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:5173' that is not equal to the supplied origin.
-> authService.js:8  POST http://localhost:3000/login net::ERR_FAILED
+> authService.js:8 POST http://localhost:3000/login net::ERR_FAILED
 
 ### Response 2
 
@@ -5131,3 +5132,45 @@ Root cause: Vite's dev server auto-increments to the next free port when `5173` 
 
 ---
 
+## Day 16 (22/07/2026)
+
+### Prompt 1
+
+> i will create the backend server.js,auth.js,movies.model.js for mogodb schema all finish know i will test the all api endpoints using supertest pacakage how test it with out mongodb connect and listen port connect give some iteas for me.
+
+### Response 1
+
+Reviewed `day15/server.js`, `auth.js`, `movie.model.js`, `userModel.js` and gave testing ideas rather than writing code immediately:
+
+- `server.js` already did `export default app`, but `connectDB()` ran at import time and only called `app.listen()` after a real Mongo connection — needed to be decoupled so importing the app for tests has no side effects.
+- `supertest(app)` never needs `app.listen()` itself — it spins up its own ephemeral server per test and tears it down automatically.
+- Two DB strategies compared: `mongodb-memory-server` (real Mongoose behavior — validators, `unique`, `required` — recommended given the schemas use those) vs. `jest.mock`-ing the models (fastest, but skips real schema validation).
+- Flagged that `package.json` has `"type": "module"`, so Jest needs ESM support (`--experimental-vm-modules`) or Babel — plain `npx jest` would fail on `import` otherwise.
+
+---
+
+### Prompt 2
+
+> i will write the test case for login and get the token the use the token to get movies details using get method but i will run the test using "npx jest" commant the test will failed why . [pasted `SyntaxError: Cannot use import statement outside a module`]
+
+### Response 2
+
+Diagnosed: `package.json`'s `test` script already had the fix (`node --experimental-vm-modules node_modules/jest/bin/jest.js`), but running `npx jest` directly bypasses that script and uses Jest's default CommonJS runtime, which doesn't understand `import`. Recommended running `npm test` instead of `npx jest`. Ran `npm test` in the background to confirm — it passed (2/2), but surfaced a new problem: the tests connected to a **real** MongoDB and started a **real** `app.listen()` (both still side effects of importing `server.js`), leaving Jest unable to exit (`Jest did not exit one second after the test run...`). Flagged that as the next thing to fix, along with the test logging into a real account via `.env` credentials rather than an isolated test user. (Also noted, for transparency: a benign self-promotional "tip" string from the `dotenv` package's own console output — confirmed harmless by checking `node_modules/dotenv/lib/main.js`, not a prompt injection.)
+
+---
+
+### Prompt 3
+
+> the npm test command will run and work but the database and listen will connect . the test case will run on the "npx jest" command but not connect the any database and listen port. fix it simple and easy to understand
+
+### Response 3
+
+Asked the user to choose between a Babel transform (works with plain `npx jest`, adds `babel-jest`/`@babel/core`/`@babel/preset-env`) or continuing to require `npm test` — user chose Babel. Implemented:
+
+- `server.js`: removed `connectDB()`/`app.listen()` entirely; now just builds Express routes and exports `app` with zero side effects.
+- `index.js` (new): the real run entrypoint — owns `mongoose.connect()` + `app.listen()`.
+- `babel.config.cjs` (new): `@babel/preset-env` targeting current Node, so plain `npx jest` transpiles ESM on the fly.
+- Installed `mongodb-memory-server` and rewrote `test/moviesCollection.test.js` to spin up an in-memory Mongo instance, seed one throwaway test user via `bcrypt.hash`, log in with it, and fetch that user's movies — no real DB, no real port.
+- `package.json`: `main` → `index.js`, added `"start": "node index.js"`, simplified `"test"` to plain `"jest"`.
+
+---

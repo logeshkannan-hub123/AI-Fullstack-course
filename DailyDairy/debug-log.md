@@ -219,3 +219,17 @@ Reported bug: signup and login both failed in the browser with a network error.
 - **Bug found: hardcoded single-origin allowlist broke as soon as the dev port shifted.** After the first fix, the browser reported the preflight `Access-Control-Allow-Origin` header (`5173`) didn't match the actual page origin (`5175`) — Vite had auto-incremented past `5173` because another dev server instance was still holding that port.
   - **Fixed:** replaced the static `origin: "http://localhost:5173"` with a dynamic `origin` callback matching `/^http:\/\/localhost:\d+$/`, accepting any local Vite dev port instead of one hardcoded value.
 - Still open: an extra Vite dev server instance appears to still be running somewhere, which is why the port shifted from `5173` to `5175` in the first place — worth closing stray terminals/processes so the frontend consistently lands on `5173`.
+
+## Day 16 — (22/07/2026) — Supertest/Jest setup for `day15` API (`server.js` → `app.js`/`index.js`/`database.js`)
+
+Set up API testing for the signup/login/movies endpoints with Supertest + Jest; ran into and fixed several config/structure bugs along the way.
+
+- **Bug found: `npx jest` failed with `SyntaxError: Cannot use import statement outside a module`.** `package.json` has `"type": "module"`, so Jest's default CommonJS runtime can't parse `import`/`export`. The `test` script already had the fix (`node --experimental-vm-modules ...`), but the user was invoking `npx jest` directly, which bypasses `package.json` scripts entirely.
+  - **Fixed:** added a Babel transform (`babel.config.cjs` + `babel-jest`/`@babel/core`/`@babel/preset-env`) so plain `npx jest` transpiles ESM on the fly — no special flag needed anymore; simplified the `test` script back to `"jest"`.
+- **Bug found: importing the Express app for tests had side effects.** `server.js` called `mongoose.connect()` and `app.listen()` as top-level code, so any test file importing it opened a real DB connection and a real listening port — and left Jest hanging afterward (`Jest did not exit one second after the test run has completed`) because neither was ever torn down.
+  - **Fixed:** split the app-building code (routes, no side effects) from the run entrypoint (DB connect + `listen()`), so importing the app in tests triggers neither.
+- **Design gap: the original test logged into a real account against the real database** via `.env` credentials (`USER_EMAIL`/`USER_PASSWORD`), making the test fragile (breaks if that account's password changes) and non-isolated.
+  - **Fixed:** installed `mongodb-memory-server`; tests now spin up a throwaway in-memory MongoDB instance, seed one known test user via `bcrypt.hash`, and log in with that instead of production credentials.
+- **Bug found: `node index.js` crashed — `Cannot find module './database.js'`.** After the user independently restructured the project (splitting the Express app into `app.js` and adding a `database.js` for `connectDB`/`disconnectDB`), `index.js` already imported `{ connectDB } from "./database.js"`, but that file had never actually been created.
+  - **Fixed:** created `database.js` exporting `connectDB`/`disconnectDB` matching the shape `index.js` expected; confirmed `node index.js` now connects to MongoDB and starts listening cleanly.
+- Still open: `server.js` is now orphaned dead code (superseded by `app.js`) — nothing imports it anymore; flagged to the user for deletion but not removed yet since it wasn't explicitly requested.
