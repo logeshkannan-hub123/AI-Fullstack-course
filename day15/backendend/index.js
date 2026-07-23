@@ -1,5 +1,5 @@
-import app from "./backendend/app.js";
-import { connectDB } from "./backendend/database.js";
+import app from "./app.js";
+import { connectDB } from "./database.js";
 
 const PORT = process.env.PORT || 3000;
 

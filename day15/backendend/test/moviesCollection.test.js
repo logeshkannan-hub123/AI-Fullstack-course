@@ -2,8 +2,8 @@ import request from "supertest";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import app from "../app.js";
-import { connectDB, disconnectDB } from "../database.js";
+import app from "../../app.js";
+import { connectDB, disconnectDB } from "../../database.js";
 
 dotenv.config();
 
