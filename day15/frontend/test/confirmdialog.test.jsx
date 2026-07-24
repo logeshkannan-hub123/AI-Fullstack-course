@@ -25,4 +25,14 @@ describe("ConfirmDialog", () => {
 
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
+
+  it("calls onCancel when clicking the backdrop", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+
+    const { container } = render(<ConfirmDialog onCancel={onCancel} />);
+    await user.click(container.querySelector(".dialog-backdrop"));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
 });
